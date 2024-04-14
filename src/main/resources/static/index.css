@@ -1,0 +1,153 @@
+/* Background styles */
+body {
+    background: radial-gradient(circle at top left, #ff5858, #f857a6, #b245ef, #0088ff, #00ff88); /* Radial gradient background */
+    animation: backgroundAnimation 20s ease infinite; /* Animation for background transition */
+    overflow: hidden; /* Hide overflow to prevent scrolling */
+}
+
+/* Animation for background transition */
+@keyframes backgroundAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Container styles */
+.container {
+    text-align: center;
+    margin-top: 50px;
+    font-family: 'Arial', sans-serif; /* Artistic font */
+    color: #fff; /* White text color */
+}
+
+/* Heading styles */
+h1 {
+    font-size: 60px;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Text shadow for better visibility */
+}
+
+/* Button container styles */
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+/* Button styles */
+.login-button, .register-button {
+    padding: 20px 40px;
+    margin: 0 20px;
+    border: none;
+    border-radius: 30px;
+    font-size: 24px;
+    cursor: pointer;
+    font-family: 'Arial', sans-serif; /* Artistic font */
+    background-color: transparent; /* Transparent background */
+    color: #fff; /* White text color */
+    border: 2px solid #fff; /* White border */
+    transition: all 0.3s ease;
+}
+
+/* Button hover effect */
+.login-button:hover, .register-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* Enhanced box shadow on hover */
+}
+
+/* Client button styles */
+.client {
+    border-color: #ff9f43; /* Button border color */
+}
+
+/* Agent button styles */
+.agent {
+    border-color: #3ae374; /* Button border color */
+}
+
+/* Register button styles */
+.register-button {
+    border-color: #00b0ff; /* Button border color */
+}
+
+/* Message styles */
+/* Message styles */
+.message {
+    position: absolute;
+    top: 50%;
+    left: calc(50% - 300px);
+    transform: translate(-50%, -50%);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Artistic font */
+    font-size: 36px;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Text shadow for better visibility */
+    padding: 20px 40px; /* Padding */
+    background: linear-gradient(to right, #ff5858, #f857a6, #b245ef, #0088ff, #00ff88); /* Gradient background */
+    border-radius: 50px; /* Rounded corners */
+    animation: pulseAnimation 2s ease-in-out infinite alternate; /* Animation for pulsating effect */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Box shadow */
+    transform-origin: center; /* Ensure scaling is based on the center */
+}
+
+/* Animation for pulsating effect */
+@keyframes pulseAnimation {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.05);
+    }
+}
+
+
+
+/* Boat styles */
+.boat {
+    width: 150px;
+    height: 100px;
+    background-image: url('boat.png'); /* Boat image */
+    position: absolute;
+    bottom: 20px; /* Position boat below the water */
+    left: calc(50% - 75px); /* Center boat horizontally */
+    animation: boatAnimation 10s linear infinite; /* Animation for boat movement */
+    z-index: 2; /* Ensure boat is above water */
+}
+
+@keyframes boatAnimation {
+    0% {
+        transform: translateX(-100%); /* Start from outside the left edge */
+    }
+    100% {
+        transform: translateX(100%); /* Move to the right edge */
+    }
+}
+
+
+/* Water styles */
+.water {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px; /* Adjust height as needed */
+    background: linear-gradient(to bottom, rgba(0, 119, 204, 0.3) 0%, rgba(0, 119, 204, 0.8) 100%); /* Water gradient */
+    animation: waterAnimation 10s ease infinite alternate; /* Animation for water movement */
+    z-index: 1; /* Ensure water is below the boat */
+}
+
+/* Animation for water movement */
+@keyframes waterAnimation {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-20px); /* Move water up slightly */
+    }
+}
+

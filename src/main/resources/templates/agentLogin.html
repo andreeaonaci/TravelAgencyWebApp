@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Login</title>
+  <style>
+    /* Add your CSS styles for the agent login page here */
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #0231a8, #81c5dc); /* Background gradient */
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background: linear-gradient(135deg, #ffffff, #f0f0f0);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      color: #333333;
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    input[type="text"],
+    input[type="password"],
+    button {
+      padding: 15px 30px;
+      margin: 20px 0;
+      border: none;
+      border-radius: 30px;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      width: 80%;
+      max-width: 400px;
+      display: block;
+      margin: 20px auto;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      background: linear-gradient(135deg, #ffffff, #f0f0f0);
+      border: 2px solid #e0e0e0;
+      padding: 15px 20px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+      background: linear-gradient(135deg, #29a329, #0b7a0b); /* Changed button colors */
+      color: #ffffff;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #0b7a0b, #29a329); /* Changed button colors */
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- Include React and ReactDOM from CDN -->
+<script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script>
+  const AgentLogin = () => {
+    const handleLogin = () => {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      const requestBody = {
+        mail: username,
+        password: password
+      };
+
+      fetch('/agentLogin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+              .then(response => {
+                if (response.ok) {
+                  window.location.href = '/agent_dashboard';
+                } else {
+                  alert('Login failed. Please try again.');
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+              });
+    };
+
+    return React.createElement(
+            'div',
+            { className: 'login-container' },
+            React.createElement('h1', null, 'Agent Login'),
+            React.createElement('input', { type: 'text', placeholder: 'Email', id: 'username' }), // Added id attribute
+            React.createElement('input', { type: 'password', placeholder: 'Password', id: 'password' }), // Added id attribute
+            React.createElement('button', { onClick: handleLogin }, 'Login')
+    );
+  };
+
+  // Render the AgentLogin component to the DOM
+  ReactDOM.render(React.createElement(AgentLogin), document.getElementById('root'));
+</script>
+</body>
+</html>
