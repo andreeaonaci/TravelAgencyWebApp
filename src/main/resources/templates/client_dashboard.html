@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="clientDashboard">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,8 +23,8 @@
             background: linear-gradient(135deg, #002749, #009ffd);
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 600px;
+            padding: 60px; /* Increased padding */
+            max-width: 800px; /* Increased max-width */
             width: 90%;
             text-align: center;
             transition: all 0.3s ease;
@@ -34,11 +34,11 @@
         }
 
         .h1 {
-            font-size: 36px;
+            font-size: 48px; /* Increased font size */
             font-weight: bold;
             color: #fff;
             text-shadow: 2px 2px 4px rgb(98, 111, 199);
-            margin-bottom: 20px;
+            margin-bottom: 40px; /* Increased margin */
         }
 
         /* Button styles */
@@ -75,26 +75,85 @@
         /* Additional styling for the buttons */
         .btn i {
             color: #fff;
-            font-size: 40px;
-            margin: 20px;
+            font-size: 60px; /* Increased font size */
+            margin: 30px; /* Increased margin */
             position: relative;
             z-index: 1;
         }
 
         .btn span {
             color: #fff;
-            font-size: 16px;
+            font-size: 24px; /* Increased font size */
             position: relative;
             z-index: 1;
         }
+
+        /* Additional styling for the rotating animation */
+        .rotate {
+            position: absolute;
+            top: 30px; /* Increased top position */
+            right: 30px; /* Increased right position */
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: gold;
+            font-size: 20px; /* Increased font size */
+        }
+
+        .rotate i {
+            font-size: 80px; /* Increased font size */
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body>
-<div id="root"></div>
+<body ng-controller="DashboardController as dashboard">
+<div class="container">
+    <!-- React part -->
+    <div id="reactRoot"></div>
+</div>
 
+<!-- Angular rotating star -->
+<div class="rotate" ng-click="dashboard.logout()">
+    <i class="fas fa-star"></i>
+    <span>Logout</span>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
 <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
 <script>
+    angular.module('clientDashboard', [])
+        .controller('DashboardController', function($location) {
+            // Angular controller logic
+            this.logout = function() {
+                alert('Logging out...');
+                // Redirect to logout page or perform logout action
+            };
+
+            // Retrieve client email from URL parameter
+            this.clientMail = '<%= username %>';
+
+
+            // Functions to handle button clicks
+            this.handleMakeReservation = function() {
+                window.location.href = `/make_reservation?clientMail=${this.clientMail}`;
+            };
+
+            this.handleViewProjects = function() {
+                window.location.href = `/view_projects?clientMail=${this.clientMail}`;
+            };
+
+            this.handleGiveFeedback = function() {
+                window.location.href = `/give_feedback?clientMail=${this.clientMail}`;
+            };
+        });
+
     // Define SpaceControlPanel component
     function SpaceControlPanel() {
         // Functions to handle button clicks
@@ -108,10 +167,6 @@
 
         const handleGiveFeedback = () => {
             window.location.href = '/give_feedback';
-        };
-
-        const handleLogout = () => {
-            window.location.href = '/clientLogin';
         };
 
         // Return JSX for the control panel
@@ -143,19 +198,12 @@
                 React.createElement('i', { className: 'fas fa-comments' }),
                 React.createElement('br'),
                 React.createElement('span', null, 'Give Feedback')
-            ),
-            React.createElement(
-                'button',
-                { className: 'btn', onClick: handleLogout },
-                React.createElement('i', { className: 'fas fa-sign-out-alt' }),
-                React.createElement('br'),
-                React.createElement('span', null, 'Logout')
             )
         );
     }
 
     // Render the SpaceControlPanel component to the DOM
-    ReactDOM.render(React.createElement(SpaceControlPanel), document.getElementById('root'));
+    ReactDOM.render(React.createElement(SpaceControlPanel), document.getElementById('reactRoot'));
 </script>
 </body>
 </html>

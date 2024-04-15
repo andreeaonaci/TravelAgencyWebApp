@@ -93,6 +93,7 @@
     // Function to handle login button click
     const handleLogin = () => {
       const username = document.getElementById('username').value;
+      console.log('Username:', username);
       const password = document.getElementById('password').value;
 
       fetch('/clientLogin', {
@@ -104,14 +105,25 @@
       })
               .then(response => {
                 if (response.ok) {
-                  window.location.href = '/client_dashboard';
+                  return response.text();
                 } else {
-                  alert('Login failed. Please try again.');
+                  return response.text();
+                }
+              })
+              .then(responseData => {
+                if (responseData.startsWith("/")) {
+                  var baseUrl = window.location.origin;
+                  var dashboardUrl = baseUrl + responseData; // Here we append the responseData directly to baseUrl
+
+                  window.location.href = dashboardUrl;
+                } else {
+                  document.getElementById("errorMessage").textContent = responseData;
                 }
               })
               .catch(error => {
-                console.error('Error:', error);
+                console.error("Error logging in:", error);
               });
+
     };
 
     return React.createElement(

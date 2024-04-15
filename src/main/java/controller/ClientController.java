@@ -8,9 +8,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import services.ClientService;
 
 import java.util.Map;
@@ -27,14 +29,12 @@ public class ClientController {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(client.getClientMail(), null);
             SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(authenticationToken);
-            if (securityContext.getAuthentication().isAuthenticated()) {
-                return ResponseEntity.status(HttpStatus.OK).body("/client_dashboard" + client.getClientId());
-            }
-        }
-        else
+            return ResponseEntity.status(HttpStatus.OK).body("/client_dashboard.html?username=" + client.getClientMail());
+        } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        return null;
+        }
     }
+
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody Map<String, String> clientData) {
         try {
@@ -52,10 +52,12 @@ public class ClientController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error registering user: " + e.getMessage());
         }
     }
-    @GetMapping("/client_dashboard")
-    public String clientDashboard() {
+    @GetMapping("/client_dashboard.html")
+    public String clientDashboard(@RequestParam("username") String username, Model model) {
+        model.addAttribute("username", username);
         return "client_dashboard";
     }
+
     @GetMapping("/view_projects")
     public String ViewProjectsDashboard() {
         return "view_projects";

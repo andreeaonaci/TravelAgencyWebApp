@@ -11,7 +11,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: #f8f9fa; /* Light gray background */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,9 +20,9 @@
         }
 
         .container {
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff; /* White background */
+            border-radius: 20px; /* Rounded corners */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Soft shadow */
             padding: 40px;
             max-width: 600px;
             width: 90%;
@@ -34,10 +34,11 @@
         }
 
         .title {
-            font-size: 24px;
+            font-size: 28px; /* Increased font size */
             font-weight: bold;
-            color: #333;
+            color: #333; /* Dark gray color */
             margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
         }
 
         .reservation-form {
@@ -50,26 +51,36 @@
         .input-field {
             width: 100%;
             margin-bottom: 20px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 14px;
+            border: none; /* No border */
+            border-radius: 10px; /* Rounded corners */
             box-sizing: border-box;
-            font-size: 16px;
+            font-size: 18px; /* Increased font size */
+            color: #555; /* Dark gray text color */
+            background-color: #f0f0f0; /* Light gray background */
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition on hover */
+        }
+
+        .input-field:focus {
+            outline: none; /* Remove outline on focus */
+            background-color: #e0e0e0; /* Lighter gray background on focus */
+            transform: scale(1.02); /* Scale effect on focus */
         }
 
         .btn {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
+            background-color: #28a745; /* Green background */
+            color: #fff; /* White text color */
+            border: none; /* No border */
+            border-radius: 10px; /* Rounded corners */
+            padding: 14px 24px; /* Increased padding */
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+            font-size: 18px; /* Increased font size */
+            transition: background-color 0.3s ease; /* Smooth transition on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
         }
 
         .btn:hover {
-            background-color: #0056b3;
+            background-color: #218838; /* Darker green on hover */
         }
 
         table {
@@ -78,26 +89,54 @@
         }
 
         th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
+            padding: 16px; /* Increased padding */
+            border-bottom: 2px solid #ddd; /* Light gray border */
             text-align: left;
         }
 
         th {
-            background-color: #007bff;
-            color: #fff;
+            background-color: #343a40; /* Dark background */
+            color: #fff; /* White text color */
             font-weight: bold;
         }
 
         tr:hover {
-            background-color: #f2f2f2;
+            background-color: #f2f2f2; /* Light gray background on hover */
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated {
+            animation: fadeInUp 0.5s ease;
+        }
+
+        /* Gradient background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b, #ffcb6b); /* Gradient colors */
+            z-index: -1;
         }
     </style>
 </head>
 <body>
-<div class="container" id="root"></div>
+<div class="container animated" id="root"></div>
 
-<div id="table-container"></div>
+<div id="table-container" class="animated"></div>
 
 <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
@@ -125,7 +164,12 @@
             React.createElement(
                 'form',
                 { className: 'reservation-form', onSubmit: handleSubmit },
-                React.createElement('input', { className: 'input-field', type: 'text', name: 'project_id', placeholder: 'Project ID', required: true }),
+                React.createElement('select', { className: 'input-field', name: 'project_id', required: true },
+                    React.createElement('option', { value: '' }, 'Select Project ID'),
+                    React.createElement('option', { value: '1' }, 'Project A'),
+                    React.createElement('option', { value: '2' }, 'Project B'),
+                    React.createElement('option', { value: '3' }, 'Project C')
+                ),
                 React.createElement('input', { className: 'input-field', type: 'text', name: 'customer_id', placeholder: 'Customer ID', required: true }),
                 React.createElement('button', { className: 'btn', type: 'submit' }, 'Make Reservation')
             )
@@ -167,7 +211,6 @@
                     React.createElement('td', null, '3'),
                     React.createElement('td', null, 'Project C')
                 )
-                // Add more rows as needed
             )
         );
     }

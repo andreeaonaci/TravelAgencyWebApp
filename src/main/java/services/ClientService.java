@@ -22,4 +22,8 @@ public class ClientService {
             throw e;
         }
     }
+
+    public Client getClientById(Long clientId) {
+        return clientRepository.findById(clientId).orElse(null);
+    }
 }

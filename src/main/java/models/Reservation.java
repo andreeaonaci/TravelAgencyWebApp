@@ -18,6 +18,14 @@ public class Reservation {
     @JoinColumn(name = "reservation_customer")
     private Client client;
 
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
     public Reservation() {
     }
 
