@@ -5,10 +5,9 @@ import org.springframework.stereotype.Service;
 import models.Project;
 import repositories.ProjectRepository;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 
 @Service
 public class ProjectService {
@@ -34,5 +33,22 @@ public class ProjectService {
         }
 
         return simplifiedProjects;
+    }
+
+    public int getProjectDuration(Long projectId) {
+        Project project = findById(projectId);
+        Date projectStart = project.getStart();
+        Date projectStop = project.getStop();
+        long millisecondsPerDay = 24 * 60 * 60 * 1000;
+        long startMillis = projectStart.getTime();
+        long stopMillis = projectStop.getTime();
+        long differenceInMillis = stopMillis - startMillis;
+        long durationInDays = differenceInMillis / millisecondsPerDay;
+        return (int) durationInDays;
+    }
+
+    public String getHotelNameById(int hotelId) {
+        Project project = projectRepository.findById(hotelId);
+        return project.getHotel();
     }
 }

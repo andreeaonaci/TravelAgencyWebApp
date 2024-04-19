@@ -8,7 +8,11 @@ public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "reservation_id")
-    private int id;
+    private Long id;
+
+    public Long getId() {
+        return id;
+    }
 
     @ManyToOne
     @JoinColumn(name = "reservation_project")
@@ -29,8 +33,7 @@ public class Reservation {
     public Reservation() {
     }
 
-    public Reservation(int id, Project project, Client client) {
-        this.id = id;
+    public Reservation(Project project, Client client) {
         this.project = project;
         this.client = client;
     }
