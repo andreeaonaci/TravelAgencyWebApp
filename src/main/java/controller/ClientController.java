@@ -61,4 +61,10 @@ public class ClientController {
         model.addAttribute("username", username);
         return "client_dashboard";
     }
+
+    @GetMapping("/api/feedback/give_feedback.html")
+    public String giveFeedback(@RequestParam("username") String username, Model model) {
+        model.addAttribute("username", username);
+        return "give_feedback";
+    }
 }

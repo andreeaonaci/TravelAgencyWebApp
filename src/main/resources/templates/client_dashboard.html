@@ -131,23 +131,11 @@
     angular.module('clientDashboard', [])
         .controller('DashboardController', function($location) {
             this.logout = function() {
-                alert('Logging out...');
+                window.location.href = `/api/clients/clientLogin`;
             };
 
             var urlParams = new URLSearchParams(window.location.search);
             this.clientMail = urlParams.get('username');
-
-            // this.handleMakeReservation = function() {
-            //     window.location.href = `/make_reservation.html?clientMail=${this.clientMail}`;
-            // };
-            //
-            // this.handleViewProjects = function() {
-            //     window.location.href = `/view_projects.html?clientMail=${this.clientMail}`;
-            // };
-            //
-            // this.handleGiveFeedback = function() {
-            //     window.location.href = `/give_feedback.html?clientMail=${this.clientMail}`;
-            // };
         });
 
     // Define SpaceControlPanel component
@@ -171,7 +159,7 @@
 
         const handleGiveFeedback = () => {
             var clientMail = getUrlParameter('username');
-            window.location.href = `/give_feedback.html?username=${clientMail}`;
+            window.location.href = `/api/feedback/give_feedback.html?clientMail=${clientMail}`;
         };
 
         // Return JSX for the control panel

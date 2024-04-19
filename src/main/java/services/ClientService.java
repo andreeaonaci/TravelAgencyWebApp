@@ -26,4 +26,8 @@ public class ClientService {
     public Client getClientByMail(String clientMail) {
         return clientRepository.findByClientMail(clientMail).orElse(null);
     }
+
+    public Client getClientById(Long clientId) {
+        return clientRepository.findById(clientId).orElse(null);
+    }
 }

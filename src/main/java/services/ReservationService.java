@@ -7,6 +7,8 @@ import models.Client;
 import models.Reservation;
 import repositories.ReservationRepository;
 
+import java.util.List;
+
 @Service
 public class ReservationService {
 
@@ -37,5 +39,35 @@ public class ReservationService {
             return null;
         }
         return reservation.getId();
+    }
+
+    public boolean checkExistingReservation(Long projectId, String clientMail) {
+        Project project = projectService.findById(projectId);
+        Client client = clientService.getClientByMail(clientMail);
+        Reservation existingReservation = reservationRepository.findByProjectAndClient(project, client);
+        return existingReservation != null;
+    }
+
+    public List<Reservation> getReservations(Long projectId, String clientMail) {
+        Project project = projectService.findById(projectId);
+        Client client = clientService.getClientByMail(clientMail);
+        return reservationRepository.findAllByProjectAndClient(project, client);
+    }
+
+    public void deleteExistingReservations(Long projectId, String clientMail) {
+        Project project = projectService.findById(projectId);
+        Client client = clientService.getClientByMail(clientMail);
+        List<Reservation> existingReservations = reservationRepository.findAllByProjectAndClient(project, client);
+        reservationRepository.deleteAll(existingReservations);
+    }
+
+    public List<Long> getAllProjectsByClient(String clientMail) {
+        Client client = clientService.getClientByMail(clientMail);
+        List<Reservation> reservations = reservationRepository.findAllByClient(client);
+        List<Long> projectIds = new java.util.ArrayList<>();
+        for (Reservation reservation : reservations) {
+            projectIds.add((long) reservation.getProject().getProjectId());
+        }
+        return projectIds;
     }
 }

@@ -2,9 +2,267 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Give Feedback</title>
+    <!-- Include Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #591301, #c50808, #e17c7c); /* Gradient colors */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff; /* White background */
+            border-radius: 20px; /* Rounded corners */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .title {
+            font-size: 28px; /* Increased font size */
+            font-weight: bold;
+            color: #333; /* Dark gray color */
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
+        }
+
+        .reservation-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 14px;
+            border: none; /* No border */
+            border-radius: 10px; /* Rounded corners */
+            box-sizing: border-box;
+            font-size: 18px; /* Increased font size */
+            color: #555; /* Dark gray text color */
+            background-color: #f0f0f0; /* Light gray background */
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition on hover */
+        }
+
+        .input-field:focus {
+            outline: none; /* Remove outline on focus */
+            background-color: #e0e0e0; /* Lighter gray background on focus */
+            transform: scale(1.02); /* Scale effect on focus */
+        }
+
+        .btn {
+            background-color: #28a745; /* Green background */
+            color: #fff; /* White text color */
+            border: none; /* No border */
+            border-radius: 10px; /* Rounded corners */
+            padding: 14px 24px; /* Increased padding */
+            cursor: pointer;
+            font-size: 18px; /* Increased font size */
+            transition: background-color 0.3s ease; /* Smooth transition on hover */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+        }
+
+        .btn:hover {
+            background-color: #218838; /* Darker green on hover */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px; /* Increased padding */
+            border-bottom: 2px solid #ddd; /* Light gray border */
+            text-align: left;
+        }
+
+        th {
+            background-color: #343a40; /* Dark background */
+            color: #fff; /* White text color */
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f2f2f2; /* Light gray background on hover */
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated {
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .text-area-container {
+            width: 100%;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            background-color: #f0f0f0; /* Light gray background */
+            border-radius: 10px; /* Rounded corners */
+            overflow: hidden;
+        }
+
+        .text-area-field {
+            width: calc(100% - 28px);
+            height: 100px; /* Adjust height as needed */
+            padding: 14px;
+            border: none; /* No border */
+            border-radius: 10px; /* Rounded corners */
+            box-sizing: border-box;
+            font-size: 18px; /* Increased font size */
+            color: #555; /* Dark gray text color */
+            background-color: #f0f0f0; /* Light gray background */
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition on hover */
+            resize: none; /* Disable resize */
+        }
+
+        .text-area-field:focus {
+            outline: none; /* Remove outline on focus */
+            background-color: #e0e0e0; /* Lighter gray background on focus */
+            transform: scale(1.02); /* Scale effect on focus */
+        }
+    </style>
 </head>
 <body>
+<div class="container animated" id="root"></div>
 
+<div id="table-container" class="animated"></div>
+
+<script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script>
+    function ReservationForm() {
+        const [projects, setProjects] = React.useState([]);
+
+        React.useEffect(() => {
+            const clientMail = getUrlParameter('clientMail');
+
+            // Declare formData here
+            const formData = new FormData();
+            formData.append('clientMail', clientMail);
+
+            fetch(`/api/projects/all_projects_by_client/${clientMail}`)
+                    .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch projects');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Fetched projects:', data);
+                    // Filter projects based on stop date
+                    filterProjectsByDuration(data, clientMail);
+                })
+                .catch(error => console.error('Error fetching projects:', error));
+        }, []);
+
+        const filterProjectsByDuration = (projectIds, clientMail) => {
+            const formData = new FormData();
+            formData.append('projectIds', JSON.stringify(projectIds)); // Ensure projectIds is passed correctly
+            fetch("/api/projects/all_projects_duration", {
+                method: "POST", // Use POST method to send data
+                body: formData // Include formData as the body of the request
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch project durations');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setProjects(data);
+                })
+                .catch(error => console.error('Error fetching project durations:', error));
+        };
+
+
+        const handleSubmit = (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const projectID = formData.get('project_id');
+            const clientMail = getUrlParameter('clientMail');
+            console.log('Project ID:', projectID);
+            console.log('Client Mail:', clientMail);
+
+            formData.append('projectId', projectID);
+            formData.append('clientMail', clientMail);
+
+            fetch("/api/feedback/give_feedback", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert("Feedback added successful.")
+                        window.location.href = `/api/clients/client_dashboard.html?username=${clientMail}`;
+                    } else {
+                        alert("Something went wrong. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("message").innerText = "Error reservation: " + error;
+                    console.error("Error reservation:", error);
+                });
+        };
+
+        return React.createElement(
+            'form',
+            { className: 'reservation-form', onSubmit: handleSubmit },
+            React.createElement(
+                'select',
+                { className: 'input-field', name: 'project_id', required: true },
+                React.createElement('option', { value: '' }, 'Select Project ID'),
+                projects.map(project =>
+                    React.createElement('option', { key: project.projectId, value: project.projectId }, `${project.projectId} - ${project.projectName}`)
+                )
+            ),
+            React.createElement('input', { className: 'input-field', type: 'field', name: 'clientMail', value: getUrlParameter('clientMail'), required: true, disabled: true }),
+            React.createElement('textarea', { className: 'text-area-field', name: 'feedback', placeholder: 'Write your feedback here', required: true, disabled: false }),
+            React.createElement('button', { className: 'btn', type: 'submit' }, 'Submit Feedback')
+        );
+    }
+
+    // Render ReservationForm only once
+    ReactDOM.render(React.createElement(ReservationForm), document.getElementById('root'));
+
+
+
+    // Function to extract parameter from URL
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    ReactDOM.render(React.createElement(ReservationForm), document.getElementById('root'));
+</script>
 </body>
 </html>

@@ -18,6 +18,14 @@ public class Reservation {
     @JoinColumn(name = "reservation_project")
     private Project project;
 
+    public Project getProject() {
+        return project;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
     @ManyToOne
     @JoinColumn(name = "reservation_customer")
     private Client client;

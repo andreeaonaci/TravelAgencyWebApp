@@ -177,11 +177,10 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        console.log("Reservation successful");
-                        // Redirect the user to the services page upon successful reservation
+                        alert("Reservation successful.")
                         window.location.href = `/api/projects/services.html?projectId=${projectID}&clientMail=${clientMail}`;
                     } else {
-                        console.error("Make Reservation failed");
+                        alert("Reservation failed. Maybe you have already made a reservation for this project.");
                     }
                 })
                 .catch(error => {
@@ -191,19 +190,19 @@
         };
 
         return React.createElement(
-                'form',
-                { className: 'reservation-form', onSubmit: handleSubmit },
-                React.createElement(
-                    'select',
-                    { className: 'input-field', name: 'project_id', required: true },
-                    React.createElement('option', { value: '' }, 'Select Project ID'),
-                    projects.map(project =>
-                        React.createElement('option', { key: project.projectId, value: project.projectId }, `${project.projectId} - ${project.projectName}`)
-                    )
-                ),
-                React.createElement('input', { className: 'input-field', type: 'text', name: 'customer_id', value: getUrlParameter('clientMail'), required: true, disabled: true }),
-                React.createElement('button', { className: 'btn', type: 'submit' }, 'Make Reservation')
-            );
+            'form',
+            { className: 'reservation-form', onSubmit: handleSubmit },
+            React.createElement(
+                'select',
+                { className: 'input-field', name: 'project_id', required: true },
+                React.createElement('option', { value: '' }, 'Select Project ID'),
+                projects.map(project =>
+                    React.createElement('option', { key: project.projectId, value: project.projectId }, `${project.projectId} - ${project.projectName}`)
+                )
+            ),
+            React.createElement('input', { className: 'input-field', type: 'text', name: 'customer_id', value: getUrlParameter('clientMail'), required: true, disabled: true }),
+            React.createElement('button', { className: 'btn', type: 'submit' }, 'Make Reservation')
+        );
     }
 
     ReactDOM.render(React.createElement(ReservationForm), document.getElementById('root'));

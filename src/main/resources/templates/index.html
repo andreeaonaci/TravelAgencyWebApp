@@ -91,7 +91,7 @@
       fetch('/api/clients/clientLogin')
               .then(response => {
                 if (response.ok) {
-                  window.location.href = response.url; // Redirect to the returned URL
+                  window.location.href = response.url;
                 } else {
                   throw new Error('Failed to login as client');
                 }
