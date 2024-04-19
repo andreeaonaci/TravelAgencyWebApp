@@ -96,7 +96,7 @@
       console.log('Username:', username);
       const password = document.getElementById('password').value;
 
-      fetch('/clientLogin', {
+      fetch('/api/clients/clientLogin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,8 +112,9 @@
               })
               .then(responseData => {
                 if (responseData.startsWith("/")) {
+                  console.log('Redirecting to dashboard:', responseData);
                   var baseUrl = window.location.origin;
-                  var dashboardUrl = baseUrl + responseData; // Here we append the responseData directly to baseUrl
+                  var dashboardUrl = baseUrl + responseData;
 
                   window.location.href = dashboardUrl;
                 } else {

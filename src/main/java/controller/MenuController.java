@@ -12,7 +12,7 @@ public class MenuController {
         return "index";
     }
 
-    @GetMapping("/clientLogin")
+    @GetMapping("/api/clients/clientLogin")
     public String clientLogin(Model model) {
         return "clientLogin";
     }

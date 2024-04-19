@@ -12,7 +12,6 @@ const Login = () => {
         try {
             const response = await axios.post('/api/login', { username, password });
             console.log('Login successful:', response.data);
-            // Handle successful login, e.g., redirect to dashboard
         } catch (error) {
             console.error('Login failed:', error.response.data);
             setError('Invalid username or password');

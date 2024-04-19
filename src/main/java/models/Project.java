@@ -3,7 +3,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "travel.projects")
+@Table(name = "projects")
 public class Project {
 
     @Id
@@ -29,5 +29,9 @@ public class Project {
 
     public String getName() {
         return name;
+    }
+
+    public int getProjectId() {
+        return id;
     }
 }

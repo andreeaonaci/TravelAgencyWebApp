@@ -88,7 +88,7 @@
   // Define the Index component inline
   const Index = () => {
     const handleLoginAsClient = () => {
-      fetch('/clientLogin')
+      fetch('/api/clients/clientLogin')
               .then(response => {
                 if (response.ok) {
                   window.location.href = response.url; // Redirect to the returned URL

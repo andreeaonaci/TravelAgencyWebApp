@@ -130,43 +130,48 @@
 <script>
     angular.module('clientDashboard', [])
         .controller('DashboardController', function($location) {
-            // Angular controller logic
             this.logout = function() {
                 alert('Logging out...');
-                // Redirect to logout page or perform logout action
             };
 
-            // Retrieve client email from URL parameter
-            this.clientMail = '<%= username %>';
+            var urlParams = new URLSearchParams(window.location.search);
+            this.clientMail = urlParams.get('username');
 
-
-            // Functions to handle button clicks
-            this.handleMakeReservation = function() {
-                window.location.href = `/make_reservation?clientMail=${this.clientMail}`;
-            };
-
-            this.handleViewProjects = function() {
-                window.location.href = `/view_projects?clientMail=${this.clientMail}`;
-            };
-
-            this.handleGiveFeedback = function() {
-                window.location.href = `/give_feedback?clientMail=${this.clientMail}`;
-            };
+            // this.handleMakeReservation = function() {
+            //     window.location.href = `/make_reservation.html?clientMail=${this.clientMail}`;
+            // };
+            //
+            // this.handleViewProjects = function() {
+            //     window.location.href = `/view_projects.html?clientMail=${this.clientMail}`;
+            // };
+            //
+            // this.handleGiveFeedback = function() {
+            //     window.location.href = `/give_feedback.html?clientMail=${this.clientMail}`;
+            // };
         });
 
     // Define SpaceControlPanel component
     function SpaceControlPanel() {
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
         // Functions to handle button clicks
         const handleMakeReservation = () => {
-            window.location.href = '/make_reservation';
+            var clientMail = getUrlParameter('username');
+            window.location.href = `/api/projects/make_reservation.html?clientMail=${clientMail}`;
         };
 
         const handleViewProjects = () => {
-            window.location.href = '/view_projects';
+            var clientMail = getUrlParameter('username');
+            window.location.href = `/api/projects/view_projects.html?username=${clientMail}`;
         };
 
         const handleGiveFeedback = () => {
-            window.location.href = '/give_feedback';
+            var clientMail = getUrlParameter('username');
+            window.location.href = `/give_feedback.html?username=${clientMail}`;
         };
 
         // Return JSX for the control panel

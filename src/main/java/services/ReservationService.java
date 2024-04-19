@@ -1,5 +1,6 @@
 package services;
 
+import models.ReservationAux;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import models.Project;
@@ -19,12 +20,13 @@ public class ReservationService {
     @Autowired
     private ClientService clientService;
 
-    public void makeReservation(Long projectId, Long clientId) {
+    public void makeReservation(Long projectId, String clientMail) {
         Project project = projectService.findById(projectId);
-        Client client = clientService.getClientById(clientId);
+        Client client = clientService.getClientByMail(clientMail);
         Reservation reservation = new Reservation();
         reservation.setProject(project);
         reservation.setClient(client);
+        System.out.println("Reservation made for project " + project.getName() + " by " + client.getClientName() + " " + " (" + client.getClientMail() + ").");
         reservationRepository.save(reservation);
     }
 }

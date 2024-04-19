@@ -142,81 +142,82 @@
 <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
 <script>
     function ReservationForm() {
+        const [projects, setProjects] = React.useState([]);
+
+        React.useEffect(() => {
+            fetch('/api/projects/all_projects')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch projects');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Fetched projects:', data); // Log fetched projects
+                    setProjects(data);
+                })
+                .catch(error => console.error('Error fetching projects:', error));
+        }, []);
+
         const handleSubmit = (event) => {
             event.preventDefault();
             const formData = new FormData(event.target);
             const projectID = formData.get('project_id');
-            const customerID = formData.get('customer_id');
-            // Here you can perform actions like sending the data to the server
+            const clientMail = getUrlParameter('clientMail');
             console.log('Project ID:', projectID);
-            console.log('Customer ID:', customerID);
-            // Redirect or perform other actions as needed
+            console.log('Client Mail:', clientMail);
+
+            // Append projectId to the FormData object
+            formData.append('projectId', projectID);
+            formData.append('clientMail', clientMail);
+
+            fetch("/api/projects/make_reservation", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Reservation successful");
+                        // Redirect the user to the services page upon successful reservation
+                        window.location.href = `/api/projects/services.html?projectId=${projectID}&clientMail=${clientMail}`;
+                    } else {
+                        console.error("Make Reservation failed");
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("message").innerText = "Error reservation: " + error;
+                    console.error("Error reservation:", error);
+                });
         };
 
         return React.createElement(
-            'div',
-            null,
-            React.createElement(
-                'h1',
-                { className: 'title' },
-                'Make a Reservation'
-            ),
-            React.createElement(
                 'form',
                 { className: 'reservation-form', onSubmit: handleSubmit },
-                React.createElement('select', { className: 'input-field', name: 'project_id', required: true },
+                React.createElement(
+                    'select',
+                    { className: 'input-field', name: 'project_id', required: true },
                     React.createElement('option', { value: '' }, 'Select Project ID'),
-                    React.createElement('option', { value: '1' }, 'Project A'),
-                    React.createElement('option', { value: '2' }, 'Project B'),
-                    React.createElement('option', { value: '3' }, 'Project C')
+                    projects.map(project =>
+                        React.createElement('option', { key: project.projectId, value: project.projectId }, `${project.projectId} - ${project.projectName}`)
+                    )
                 ),
-                React.createElement('input', { className: 'input-field', type: 'text', name: 'customer_id', placeholder: 'Customer ID', required: true }),
+                React.createElement('input', { className: 'input-field', type: 'text', name: 'customer_id', value: getUrlParameter('clientMail'), required: true, disabled: true }),
                 React.createElement('button', { className: 'btn', type: 'submit' }, 'Make Reservation')
-            )
-        );
-    }
-
-    function ProjectsTable() {
-        return React.createElement(
-            'table',
-            null,
-            React.createElement(
-                'thead',
-                null,
-                React.createElement(
-                    'tr',
-                    null,
-                    React.createElement('th', null, 'Project ID'),
-                    React.createElement('th', null, 'Project Name')
-                )
-            ),
-            React.createElement(
-                'tbody',
-                null,
-                React.createElement(
-                    'tr',
-                    null,
-                    React.createElement('td', null, '1'),
-                    React.createElement('td', null, 'Project A')
-                ),
-                React.createElement(
-                    'tr',
-                    null,
-                    React.createElement('td', null, '2'),
-                    React.createElement('td', null, 'Project B')
-                ),
-                React.createElement(
-                    'tr',
-                    null,
-                    React.createElement('td', null, '3'),
-                    React.createElement('td', null, 'Project C')
-                )
-            )
-        );
+            );
     }
 
     ReactDOM.render(React.createElement(ReservationForm), document.getElementById('root'));
-    ReactDOM.render(React.createElement(ProjectsTable), document.getElementById('table-container'));
+
+
+    // Function to extract parameter from URL
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    ReactDOM.render(React.createElement(ReservationForm), document.getElementById('root'));
 </script>
 </body>
 </html>

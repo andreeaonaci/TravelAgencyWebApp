@@ -2,6 +2,7 @@ package controller;
 
 import models.Client;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,18 +10,21 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import services.ClientService;
+import services.ProjectService;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/api/clients")
 public class ClientController {
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private ProjectService projectService;
 
     @PostMapping("/clientLogin")
     public ResponseEntity<?> loginClient(@RequestBody Client client) {
@@ -29,7 +33,7 @@ public class ClientController {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(client.getClientMail(), null);
             SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(authenticationToken);
-            return ResponseEntity.status(HttpStatus.OK).body("/client_dashboard.html?username=" + client.getClientMail());
+            return ResponseEntity.status(HttpStatus.OK).body("/api/clients/client_dashboard.html?username=" + client.getClientMail());
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
         }
@@ -56,14 +60,5 @@ public class ClientController {
     public String clientDashboard(@RequestParam("username") String username, Model model) {
         model.addAttribute("username", username);
         return "client_dashboard";
-    }
-
-    @GetMapping("/view_projects")
-    public String ViewProjectsDashboard() {
-        return "view_projects";
-    }
-    @GetMapping("/make_reservation")
-    public String GiveFeedbackDashboard() {
-        return "make_reservation";
     }
 }
