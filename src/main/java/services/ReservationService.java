@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import models.Project;
 import models.Client;
 import models.Reservation;
+import org.springframework.transaction.annotation.Transactional;
 import repositories.ReservationRepository;
 
 import java.util.List;
@@ -69,5 +70,14 @@ public class ReservationService {
             projectIds.add((long) reservation.getProject().getProjectId());
         }
         return projectIds;
+    }
+    @Transactional
+    public void deleteReservationsByProjectId(Long projectId) {
+        List<Reservation> reservations = reservationRepository.findByProjectId(projectId);
+
+        // If there are reservations associated with this project, delete them
+        if (reservations != null && !reservations.isEmpty()) {
+            reservationRepository.deleteAll(reservations);
+        }
     }
 }

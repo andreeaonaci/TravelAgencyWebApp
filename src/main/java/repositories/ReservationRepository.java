@@ -12,4 +12,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>{
     Reservation findByProjectAndClient(Project project, Client client);
     List<Reservation> findAllByProjectAndClient(Project project, Client client);
     List<Reservation> findAllByClient(Client client);
+    List<Reservation> findByProjectId(Long projectId);
 }

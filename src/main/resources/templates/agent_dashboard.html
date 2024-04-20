@@ -159,7 +159,9 @@
         };
 
         const handleViewAllProjects = () => {
-            window.location.href = `/api/projects/view_all_projects.html`;
+            var agentMail = getUrlParameter('username');
+            console.log(agentMail);
+            window.location.href = `/api/projects/view_projects_admin.html?username=${agentMail}`;
         };
 
         // Return JSX for the agent dashboard

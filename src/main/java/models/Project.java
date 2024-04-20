@@ -3,6 +3,7 @@ import jakarta.persistence.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "projects")
@@ -111,4 +112,6 @@ public class Project {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mma");
         return sdf.format(stop);
     }
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Reservation> reservations;
 }

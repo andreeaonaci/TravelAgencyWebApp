@@ -1,6 +1,8 @@
 package models;
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "reservation")
 public class Reservation {
@@ -15,7 +17,7 @@ public class Reservation {
     }
 
     @ManyToOne
-    @JoinColumn(name = "reservation_project")
+    @JoinColumn(name = "reservation_project", referencedColumnName = "project_id")
     private Project project;
 
     public Project getProject() {
@@ -27,7 +29,7 @@ public class Reservation {
     }
 
     @ManyToOne
-    @JoinColumn(name = "reservation_customer")
+    @JoinColumn(name = "reservation_customer", referencedColumnName = "client_id")
     private Client client;
 
     public void setProject(Project project) {
@@ -45,4 +47,5 @@ public class Reservation {
         this.project = project;
         this.client = client;
     }
+
 }

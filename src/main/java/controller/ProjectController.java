@@ -2,6 +2,7 @@ package controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
+import models.Agent;
 import models.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,9 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import services.AgentService;
 import services.CountryService;
 import services.ProjectService;
+import services.ReservationService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,6 +27,9 @@ import java.util.*;
 public class ProjectController {
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private ReservationService reservationService;
 
     @Autowired
     private CountryService countryService;
@@ -149,5 +155,76 @@ public class ProjectController {
 
         Project projectSaved = projectService.saveProject(project);
         return ResponseEntity.status(HttpStatus.CREATED).body(projectSaved);
+    }
+
+    @GetMapping("/all_projects_update_dashboard")
+    @ResponseBody
+    public List<Map<String, Object>> getAllProjectsForAgent(@RequestParam(value = "agentMail", required = true) String agentMail) {
+        if (agentMail == null || agentMail.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "agentMail parameter is required");
+        }
+        int agentId = agentService.findByIdAgentMail(agentMail);
+        if (agentId == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent not found");
+        }
+        List<Project> projects = projectService.getProjectsByAgentId(agentId);
+        List<Map<String, Object>> projectsWithCountryAndAgent = new ArrayList<>();
+
+        for (Project project : projects) {
+            Map<String, Object> projectMap = new HashMap<>();
+            projectMap.put("projectId", project.getProjectId());
+            projectMap.put("projectName", project.getName());
+            String countryName = countryService.getCountryNameById(project.getCountry());
+            projectMap.put("countryName", countryName);
+            projectMap.put("hotel", project.getHotel());
+            projectMap.put("distance", project.getDistance());
+            projectMap.put("start", project.getFormattedStartDate());
+            projectMap.put("stop", project.getFormattedStopDate());
+            String agentName = agentService.findByIdAgent(project.getAgent()).getAgentName();
+            projectMap.put("agentName", agentName);
+            projectsWithCountryAndAgent.add(projectMap);
+        }
+
+        return projectsWithCountryAndAgent;
+    }
+    @GetMapping("/view_projects_admin.html")
+    public String viewProjectsAgentDashboard(@RequestParam("username") String agentMail, Model model) {
+        model.addAttribute("username", agentMail);
+        return "view_projects_admin";
+    }
+    @PutMapping("/{projectId}")
+    public ResponseEntity<?> updateProject(@PathVariable("projectId") Long projectId, @RequestBody Project project) {
+        if (project.getName() == null || project.getName().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Project name cannot be empty.");
+        }
+
+        try {
+            Project projectAux = projectService.findById(projectId);
+
+            projectAux.setName(project.getName());
+            projectAux.setCountry(project.getCountry());
+            projectAux.setHotel(project.getHotel());
+            projectAux.setDistance(project.getDistance());
+            projectAux.setStart(project.getStart());
+            projectAux.setStop(project.getStop());
+            projectAux.setAgent(project.getAgent());
+
+            projectService.saveProject(projectAux);
+
+            return ResponseEntity.ok("Project updated successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the project.");
+        }
+    }
+    @DeleteMapping("/delete/{projectId}")
+    public ResponseEntity<Void> deleteProject(@PathVariable Long projectId) {
+        Project existingProject = projectService.findById(projectId);
+        if (existingProject == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found");
+        }
+        Project project = projectService.findById(projectId);
+        reservationService.deleteReservationsByProjectId(projectId);
+        projectService.deleteProject(projectId);
+        return ResponseEntity.noContent().build();
     }
 }

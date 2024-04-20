@@ -62,4 +62,8 @@ public class ProjectService {
     public List<Project> getProjectsByAgentId(int agentId) {
         return projectRepository.findByAgent(agentId);
     }
+
+    public void deleteProject(Long projectId) {
+        projectRepository.deleteById(projectId);
+    }
 }
