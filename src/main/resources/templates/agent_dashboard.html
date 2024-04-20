@@ -153,7 +153,9 @@
         };
 
         const handleViewFeedbacks = () => {
-            window.location.href = `/api/feedback/view_feedbacks.html`;
+            var agentMail = getUrlParameter('username');
+            console.log(agentMail);
+            window.location.href = `/api/feedback/see_feedbacks.html?username=${agentMail}`;
         };
 
         const handleViewAllProjects = () => {

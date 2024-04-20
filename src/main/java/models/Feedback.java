@@ -48,8 +48,8 @@ public class Feedback {
 //        return client;
 //    }
 
-    public Long getFeedbackProject() {
-        return feedbackProject;
+    public int getFeedbackProject() {
+        return Math.toIntExact(feedbackProject);
     }
 
     public void setFeedbackProject(Long feedbackProject) {

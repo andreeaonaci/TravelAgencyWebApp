@@ -59,4 +59,7 @@ public class ProjectService {
         projectRepository.save(project);
         return project;
     }
+    public List<Project> getProjectsByAgentId(int agentId) {
+        return projectRepository.findByAgent(agentId);
+    }
 }
