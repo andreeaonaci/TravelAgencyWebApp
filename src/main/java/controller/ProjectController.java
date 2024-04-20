@@ -13,6 +13,8 @@ import services.AgentService;
 import services.CountryService;
 import services.ProjectService;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -108,5 +110,44 @@ public class ProjectController {
 
     private LocalDate convertToLocalDate(Date dateToConvert) {
         return dateToConvert.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    @GetMapping("/add_project.html")
+    public String addProject(@RequestParam String username, Model model) {
+        model.addAttribute("username", username);
+        return "add_project";
+    }
+
+    public static Date convertStringToDate(String dateString, String format) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        return dateFormat.parse(dateString);
+    }
+    @PostMapping("/add_project")
+    public ResponseEntity<Project> addProjectDashboard(@RequestBody Map<String, String> formData) throws ParseException {
+        Project project = new Project();
+        String projectName = formData.get("name");
+        String country = formData.get("country");
+        int countryId = countryService.getCountryIdByName(country);
+        String hotel = formData.get("hotel");
+        int distance = Integer.parseInt(formData.get("distance"));
+        String startDateString = formData.get("start");
+        String endDateString = formData.get("end");
+        String agent = formData.get("agent");
+        int agentId = agentService.findByIdAgentMail(agent);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate = dateFormat.parse(startDateString);
+        Date endDate = dateFormat.parse(endDateString);
+
+        project.setName(projectName);
+        project.setCountry(countryId);
+        project.setHotel(hotel);
+        project.setDistance(distance);
+        project.setStart(startDate);
+        project.setStop(endDate);
+        project.setAgent(agentId);
+
+        Project projectSaved = projectService.saveProject(project);
+        return ResponseEntity.status(HttpStatus.CREATED).body(projectSaved);
     }
 }

@@ -13,4 +13,8 @@ public class CountryService {
                 .orElse(null)
                 .getCountryName();
     }
+
+    public int getCountryIdByName(String countryName) {
+        return countryRepository.findByName(countryName);
+    }
 }

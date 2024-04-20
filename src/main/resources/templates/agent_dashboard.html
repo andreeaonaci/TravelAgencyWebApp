@@ -138,11 +138,18 @@
             this.agentName = urlParams.get('username');
         });
 
-    // Define AgentDashboard component
     function AgentDashboard() {
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
         // Functions to handle button clicks
         const handleAddProject = () => {
-            window.location.href = `/api/projects/add_project.html`;
+            var agentMail = getUrlParameter('username');
+            console.log(agentMail);
+            window.location.href = `/api/projects/add_project.html?username=${agentMail}`;
         };
 
         const handleViewFeedbacks = () => {

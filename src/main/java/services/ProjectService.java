@@ -13,8 +13,6 @@ public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
 
-
-
     public Project findById(Long projectId) {
         return projectRepository.findById(projectId)
                 .orElse(null);
@@ -55,5 +53,10 @@ public class ProjectService {
     public String getHotelNameById(int hotelId) {
         Project project = projectRepository.findById(hotelId);
         return project.getHotel();
+    }
+
+    public Project saveProject(Project project) {
+        projectRepository.save(project);
+        return project;
     }
 }

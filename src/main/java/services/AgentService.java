@@ -23,4 +23,8 @@ public class AgentService {
     public Agent findByIdAgent (int agentId) {
         return agentRepository.findAgentById(agentId);
     }
+
+    public int findByIdAgentMail (String agentMail) {
+        return agentRepository.findAgentByAgentMail(agentMail).getAgentId();
+    }
 }
