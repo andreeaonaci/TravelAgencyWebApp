@@ -1,6 +1,5 @@
 package controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import models.Project;
@@ -10,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import services.AgentService;
+import services.CountryService;
 import services.ProjectService;
 
 import java.time.LocalDate;
@@ -21,6 +22,12 @@ import java.util.*;
 public class ProjectController {
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private CountryService countryService;
+
+    @Autowired
+    private AgentService agentService;
     @GetMapping("/make_reservation.html")
     public String MakeReservationDashboard(@RequestParam("clientMail") String username, Model model) {
         model.addAttribute("clientMail", username);
@@ -28,20 +35,40 @@ public class ProjectController {
         model.addAttribute("projects", projects);
         return "make_reservation";
     }
-    @GetMapping("/view_projects.html")
+    @GetMapping("/view_projects_client.html")
     public String ViewProjectsDashboard(@RequestParam("username") String username, Model model) {
         model.addAttribute("username", username);
-        return "view_projects";
+        return "view_projects_client";
     }
     @GetMapping("/all_projects")
     @ResponseBody
     public List<Map<String, Object>> getAllProjects() {
-        System.out.println("Getting all projects");
         List<Map<String, Object>> projects = projectService.getAllProjects();
-        for (Map<String, Object> project : projects) {
-            System.out.println(project.get("projectId") + " " + project.get("projectName"));
-        }
         return projects;
+    }
+
+    @GetMapping("/all_projects_dashboard")
+    @ResponseBody
+    public List<Map<String, Object>> getAllProjectsDashboard() {
+        List<Project> projects = projectService.getAllProjectsForTable();
+        List<Map<String, Object>> projectsWithCountryAndAgent = new ArrayList<>();
+
+        for (Project project : projects) {
+            Map<String, Object> projectMap = new HashMap<>();
+            projectMap.put("projectId", project.getProjectId());
+            projectMap.put("projectName", project.getName());
+            String countryName = countryService.getCountryNameById(project.getCountry());
+            projectMap.put("countryName", countryName);
+            projectMap.put("hotel", project.getHotel());
+            projectMap.put("distance", project.getDistance());
+            projectMap.put("start", project.getFormattedStartDate());
+            projectMap.put("stop", project.getFormattedStopDate());
+            String agentName = agentService.findByIdAgent(project.getAgent()).getAgentName();
+            projectMap.put("agentName", agentName);
+            projectsWithCountryAndAgent.add(projectMap);
+        }
+
+        return projectsWithCountryAndAgent;
     }
 
     @PostMapping("/all_projects_duration")

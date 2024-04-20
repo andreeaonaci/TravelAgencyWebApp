@@ -9,7 +9,7 @@ public class Agent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "agent_id")
-    private int agentId;
+    private int id;
 
     @Column(name = "agent_name")
     private String agentName;
@@ -43,11 +43,11 @@ public class Agent {
 
     // Getters and setters
     public int getAgentId() {
-        return agentId;
+        return id;
     }
 
     public void setAgentId(int agentId) {
-        this.agentId = agentId;
+        this.id = agentId;
     }
 
     public String getAgentName() {

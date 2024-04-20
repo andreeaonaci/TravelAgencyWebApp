@@ -1,5 +1,7 @@
 package models;
 import jakarta.persistence.*;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -42,11 +44,11 @@ public class Project {
         this.distance = distance;
     }
 
-    public Agent getAgent() {
+    public int getAgent() {
         return agent;
     }
 
-    public void setAgent(Agent agent) {
+    public void setAgent(int agent) {
         this.agent = agent;
     }
 
@@ -70,6 +72,17 @@ public class Project {
     @Column(name = "project_hotel")
     private String hotel;
 
+    @Column(name = "project_country")
+    private int country;
+
+    public int getCountry() {
+        return country;
+    }
+
+    public void setCountry(int country) {
+        this.country = country;
+    }
+
     public String getHotel() {
         return hotel;
     }
@@ -78,9 +91,8 @@ public class Project {
         this.hotel = hotel;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "project_agent")
-    private Agent agent;
+    @Column(name = "project_agent")
+    private int agent;
 
     public String getName() {
         return name;
@@ -88,5 +100,15 @@ public class Project {
 
     public int getProjectId() {
         return id;
+    }
+
+    public String getFormattedStartDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mma");
+        return sdf.format(start);
+    }
+
+    public String getFormattedStopDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mma");
+        return sdf.format(stop);
     }
 }

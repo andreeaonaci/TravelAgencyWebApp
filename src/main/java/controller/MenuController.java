@@ -17,12 +17,12 @@ public class MenuController {
         return "clientLogin";
     }
 
-    @GetMapping("/agentLogin")
+    @GetMapping("/api/agents/agentLogin")
     public String agentLogin(Model model) {
         return "agentLogin";
     }
 
-    @GetMapping("/register")
+    @GetMapping("/api/clients/register")
     public String register(Model model) {
         return "register";
     }

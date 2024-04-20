@@ -2,9 +2,192 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Dashboard</title>
+    <!-- Include Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Custom CSS styles for the agent dashboard */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #010e2f, rgba(61, 147, 3, 0.96)); /* Background gradient */
+        }
+
+        .container {
+            background: linear-gradient(135deg, #3e9d07, #9bbb3c);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 60px; /* Increased padding */
+            max-width: 800px; /* Increased max-width */
+            width: 90%;
+            text-align: center;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+            animation: fadeInDown 0.5s ease;
+        }
+
+        .h1 {
+            font-size: 48px; /* Increased font size */
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgb(98, 111, 199);
+            margin-bottom: 40px; /* Increased margin */
+        }
+
+        /* Button styles */
+        .btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(134, 26, 26, 0.3), rgba(0,0,0,0.1));
+            border-radius: 20px;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+            opacity: 0;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Additional styling for the buttons */
+        .btn i {
+            color: #fff;
+            font-size: 60px; /* Increased font size */
+            margin: 30px; /* Increased margin */
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn span {
+            color: #fff;
+            font-size: 24px; /* Increased font size */
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Additional styling for the rotating animation */
+        .rotate {
+            position: absolute;
+            top: 30px; /* Increased top position */
+            right: 30px; /* Increased right position */
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: gold;
+            font-size: 20px; /* Increased font size */
+        }
+
+        .rotate i {
+            font-size: 80px; /* Increased font size */
+            animation: rotate 2s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <!-- React part -->
+    <div id="reactRoot"></div>
+</div>
 
+<!-- Angular rotating star -->
+<div class="rotate" ng-click="dashboard.logout()">
+    <i class="fas fa-star"></i>
+    <span>Logout</span>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script>
+    angular.module('agentDashboard', [])
+        .controller('DashboardController', function($location) {
+            this.logout = function() {
+                window.location.href = `/api/agents/agentLogin`;
+            };
+
+            var urlParams = new URLSearchParams(window.location.search);
+            this.agentName = urlParams.get('username');
+        });
+
+    // Define AgentDashboard component
+    function AgentDashboard() {
+        // Functions to handle button clicks
+        const handleAddProject = () => {
+            window.location.href = `/api/projects/add_project.html`;
+        };
+
+        const handleViewFeedbacks = () => {
+            window.location.href = `/api/feedback/view_feedbacks.html`;
+        };
+
+        const handleViewAllProjects = () => {
+            window.location.href = `/api/projects/view_all_projects.html`;
+        };
+
+        // Return JSX for the agent dashboard
+        return React.createElement(
+            'div',
+            null,
+            React.createElement(
+                'h1',
+                null,
+                'Welcome to Agent Dashboard'
+            ),
+            React.createElement(
+                'button',
+                { className: 'btn', onClick: handleAddProject },
+                React.createElement('i', { className: 'fas fa-plus' }),
+                React.createElement('br'),
+                React.createElement('span', null, 'Add Project')
+            ),
+            React.createElement(
+                'button',
+                { className: 'btn', onClick: handleViewFeedbacks },
+                React.createElement('i', { className: 'fas fa-comments' }),
+                React.createElement('br'),
+                React.createElement('span', null, 'View Feedbacks')
+            ),
+            React.createElement(
+                'button',
+                { className: 'btn', onClick: handleViewAllProjects },
+                React.createElement('i', { className: 'fas fa-tasks' }),
+                React.createElement('br'),
+                React.createElement('span', null, 'View All Projects')
+            )
+        );
+    }
+
+    // Render the AgentDashboard component to the DOM
+    ReactDOM.render(React.createElement(AgentDashboard), document.getElementById('reactRoot'));
+</script>
 </body>
 </html>

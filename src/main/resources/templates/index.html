@@ -101,7 +101,7 @@
               });
     };
     const handleLoginAsAgent = () => {
-      fetch('/agentLogin')
+      fetch('/api/agents/agentLogin')
               .then(response => {
                 if (response.ok) {
                   window.location.href = response.url;
@@ -114,7 +114,7 @@
               });
     };
     const handleRegister = () => {
-      fetch('/register')
+      fetch('/api/clients/register')
               .then(response => {
                 if (response.ok) {
                   window.location.href = response.url;

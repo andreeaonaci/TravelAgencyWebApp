@@ -93,29 +93,38 @@
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
 
-      const requestBody = {
-        mail: username,
-        password: password
-      };
-
-      fetch('/agentLogin', {
+      fetch('/api/agents/agentLogin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify({ agentMail: username, agentPassword: password }),
       })
               .then(response => {
                 if (response.ok) {
-                  window.location.href = '/agent_dashboard';
+                  return response.text();
                 } else {
-                  alert('Login failed. Please try again.');
+                  return response.text();
+                }
+              })
+              .then(responseData => {
+                if (responseData.startsWith("/")) {
+                  console.log('Redirecting to dashboard:', responseData);
+                  var baseUrl = window.location.origin;
+                  var dashboardUrl = baseUrl + responseData;
+                  window.location.href = dashboardUrl;
+                } else {
+                  // Ensure the errorMessage element exists before setting its text content
+                  const errorMessageElement = document.getElementById("errorMessage");
+                  if (errorMessageElement) {
+                    errorMessageElement.textContent = responseData;
+                  }
                 }
               })
               .catch(error => {
-                console.error('Error:', error);
+                console.error("Error logging in:", error);
               });
-    };
+  };
 
     return React.createElement(
             'div',
@@ -129,6 +138,7 @@
 
   // Render the AgentLogin component to the DOM
   ReactDOM.render(React.createElement(AgentLogin), document.getElementById('root'));
+
 </script>
 </body>
 </html>

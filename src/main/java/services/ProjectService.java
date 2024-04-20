@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 import models.Project;
 import repositories.ProjectRepository;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -14,6 +12,8 @@ public class ProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+
 
     public Project findById(Long projectId) {
         return projectRepository.findById(projectId)
@@ -33,6 +33,11 @@ public class ProjectService {
         }
 
         return simplifiedProjects;
+    }
+
+    public List<Project> getAllProjectsForTable() {
+        List<Project> projectsTable = projectRepository.findAll();
+        return projectsTable;
     }
 
     public int getProjectDuration(Long projectId) {

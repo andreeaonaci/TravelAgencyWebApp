@@ -2,9 +2,145 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Projects</title>
+    <style>
+        /* Add your CSS styles for the travel projects page here */
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #c3ec52, #0ba29d);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .project-container {
+            background: linear-gradient(135deg, #ffffff, #f0f0f0);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #333333;
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #5f74ff; /* Coral color */
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2; /* Light gray background */
+        }
+
+        tr:hover {
+            background-color: #ddd; /* Dark gray background on hover */
+        }
+    </style>
 </head>
 <body>
+<div id="root"></div>
 
+<!-- Include React and ReactDOM from CDN -->
+<script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script>
+    // Define the ProjectTable component inline
+    const ProjectTable = () => {
+        // Declare state variable to store projects
+        const [projects, setProjects] = React.useState([]);
+
+        // Fetch projects from backend when component mounts
+        React.useEffect(() => {
+            fetch('/api/projects/all_projects_dashboard')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch projects');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Fetched projects:', data); // Log fetched projects
+                    setProjects(data);
+                })
+                .catch(error => console.error('Error fetching projects:', error));
+        }, []);
+
+        // Function to format date
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            return date.toLocaleString(); // Adjust date formatting
+        };
+
+        // Map projects to table rows
+        const projectRows = projects.map(project => {
+            return React.createElement('tr', { key: project.projectId },
+                React.createElement('td', null, project.projectId),
+                React.createElement('td', null, project.projectName),
+                React.createElement('td', null, project.countryName),
+                React.createElement('td', null, project.hotel),
+                React.createElement('td', null, project.distance),
+                React.createElement('td', null, project.start),
+                React.createElement('td', null, project.stop),
+                React.createElement('td', null, project.agentName)
+            );
+        });
+
+        // Return the table component populated with projects
+        return React.createElement('div', { className: 'project-container' },
+            React.createElement('h1', null, 'Travel Projects'),
+            React.createElement('table', null,
+                React.createElement('thead', null,
+                    React.createElement('tr', null,
+                        React.createElement('th', null, 'ID'),
+                        React.createElement('th', null, 'Name'),
+                        React.createElement('th', null, 'Country'),
+                        React.createElement('th', null, 'Hotel'),
+                        React.createElement('th', null, 'Distance'),
+                        React.createElement('th', null, 'Start Date'),
+                        React.createElement('th', null, 'End Date'),
+                        React.createElement('th', null, 'Agent')
+                    )
+                ),
+                React.createElement('tbody', null, projectRows)
+            )
+        );
+    };
+
+    // Render the ProjectTable component to the DOM
+    ReactDOM.render(React.createElement(ProjectTable), document.getElementById('root'));
+</script>
 </body>
 </html>

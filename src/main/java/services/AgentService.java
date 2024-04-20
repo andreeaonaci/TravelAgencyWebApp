@@ -15,4 +15,12 @@ public class AgentService {
         System.out.println(agent.getAgentMail() + " " + agent.getAgentPassword());
         return agent != null;
     }
+
+    public void registerAgent(Agent agent) {
+        agentRepository.save(agent);
+    }
+
+    public Agent findByIdAgent (int agentId) {
+        return agentRepository.findAgentById(agentId);
+    }
 }
