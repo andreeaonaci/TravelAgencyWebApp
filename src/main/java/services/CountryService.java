@@ -15,6 +15,11 @@ public class CountryService {
     }
 
     public int getCountryIdByName(String countryName) {
-        return countryRepository.findByName(countryName);
+        Integer countryId = countryRepository.findByName(countryName);
+        if (countryId == null) {
+            throw new IllegalArgumentException("Country not found with name: " + countryName);
+        }
+        return countryId;
     }
+
 }

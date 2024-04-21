@@ -1,6 +1,7 @@
 package models;
 import jakarta.persistence.*;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
@@ -111,6 +112,16 @@ public class Project {
     public String getFormattedStopDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mma");
         return sdf.format(stop);
+    }
+
+    public void setFormattedStartDate(String formattedStartDate) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mma");
+        this.start = sdf.parse(formattedStartDate);
+    }
+
+    public void setFormattedStopDate(String formattedStopDate) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mma");
+        this.stop = sdf.parse(formattedStopDate);
     }
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Reservation> reservations;

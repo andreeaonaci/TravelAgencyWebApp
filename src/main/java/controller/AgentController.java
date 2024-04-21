@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import services.AgentService;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/agents")
@@ -36,5 +37,15 @@ public class AgentController {
     public String agentDashboard(@RequestParam("username") String username, Model model) {
         model.addAttribute("username", username);
         return "agent_dashboard";
+    }
+
+    @GetMapping("/updateAgent/{agentName}")
+    public ResponseEntity<?> getAgentIdByName(@PathVariable String agentName) {
+        Optional<Integer> agentId = agentService.getAgentIdByName(agentName);
+        if (agentId.isPresent()) {
+            return ResponseEntity.ok().body(Map.of("agentId", agentId.get()));
+        } else {
+            return ResponseEntity.status(404).body("Agent not found.");
+        }
     }
 }

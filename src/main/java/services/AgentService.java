@@ -3,7 +3,10 @@ package services;
 import models.Agent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 import repositories.AgentRepository;
+
+import java.util.Optional;
 
 @Service
 public class AgentService {
@@ -26,5 +29,13 @@ public class AgentService {
 
     public int findByIdAgentMail (String agentMail) {
         return agentRepository.findAgentByAgentMail(agentMail).getAgentId();
+    }
+
+    public int findByAgentName(String agentName) {
+        return agentRepository.findAgentByAgentName(agentName).getAgentId();
+    }
+
+    public Optional<Integer> getAgentIdByName(String agentName) {
+        return Optional.ofNullable(agentRepository.findIdByName(agentName));
     }
 }

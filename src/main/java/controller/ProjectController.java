@@ -192,29 +192,47 @@ public class ProjectController {
         model.addAttribute("username", agentMail);
         return "view_projects_admin";
     }
-    @PutMapping("/{projectId}")
-    public ResponseEntity<?> updateProject(@PathVariable("projectId") Long projectId, @RequestBody Project project) {
-        if (project.getName() == null || project.getName().trim().isEmpty()) {
+    @PutMapping("/update/{projectId}")
+    public ResponseEntity<?> updateProject(@PathVariable("projectId") Long projectId, @RequestBody Map<String, Object> updatedProjectData) throws ParseException {
+        // Check if project exists
+        System.out.println(updatedProjectData.get("country"));
+        System.out.println(updatedProjectData.get("agent"));
+        System.out.println(updatedProjectData.get("start"));
+        System.out.println(updatedProjectData.get("stop"));
+        System.out.println(updatedProjectData.get("distance"));
+
+        Project existingProject = projectService.findById(projectId);
+        if (existingProject == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Project not found.");
+        }
+
+        // Extract and validate data
+        String projectName = (String) updatedProjectData.get("projectName");
+        if (projectName == null || projectName.trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Project name cannot be empty.");
         }
+        System.out.println(updatedProjectData.get("country"));
+        // Convert names to IDs
+        String countryName = (String) updatedProjectData.get("country");
+        int countryId = countryService.getCountryIdByName(countryName); // Convert country name to ID
 
-        try {
-            Project projectAux = projectService.findById(projectId);
+        String agentName = (String) updatedProjectData.get("agent");
+        int agentId = agentService.findByAgentName(agentName); // Convert agent name to ID
 
-            projectAux.setName(project.getName());
-            projectAux.setCountry(project.getCountry());
-            projectAux.setHotel(project.getHotel());
-            projectAux.setDistance(project.getDistance());
-            projectAux.setStart(project.getStart());
-            projectAux.setStop(project.getStop());
-            projectAux.setAgent(project.getAgent());
+        // Update the project
+        existingProject.setName(projectName);
+        existingProject.setCountry(countryId);
+        existingProject.setAgent(agentId);
 
-            projectService.saveProject(projectAux);
+        // Set other project properties
+        existingProject.setHotel((String) updatedProjectData.get("hotel"));
+        existingProject.setDistance((Integer) updatedProjectData.get("distance"));
+        existingProject.setFormattedStartDate((String) updatedProjectData.get("start"));
+        existingProject.setFormattedStopDate((String) updatedProjectData.get("stop"));
 
-            return ResponseEntity.ok("Project updated successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating the project.");
-        }
+        projectService.saveProject(existingProject);
+
+        return ResponseEntity.ok("Project updated successfully.");
     }
     @DeleteMapping("/delete/{projectId}")
     public ResponseEntity<Void> deleteProject(@PathVariable Long projectId) {
@@ -226,5 +244,13 @@ public class ProjectController {
         reservationService.deleteReservationsByProjectId(projectId);
         projectService.deleteProject(projectId);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/updateCountry/{countryName}")
+    public ResponseEntity<?> getCountryIdByName(@PathVariable String countryName) {
+        int countryId = countryService.getCountryIdByName(countryName);
+        if (countryId == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(countryId);
     }
 }

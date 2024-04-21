@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CountryRepository extends JpaRepository<Country, Long>{
     @Query("SELECT c.countryId FROM Country c WHERE c.countryName = ?1")
-    int findByName(String countryName);
+    Integer findByName(String countryName); // Changed from int to Integer
 }

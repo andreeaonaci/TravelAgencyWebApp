@@ -91,10 +91,22 @@
             background-color: #ff5f5f; /* Red for Delete */
         }
 
-        .edit-input {
+        /* Edit form styles */
+        .edit-form {
+            margin-top: 20px;
+            display: none; /* Initially hidden */
+        }
+
+        .edit-form input {
             border: 1px solid #ccc;
             padding: 10px;
             border-radius: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .edit-form.active {
+            display: block; /* Display the form when active */
         }
     </style>
 </head>
@@ -107,7 +119,8 @@
 <script>
     const ProjectTable = () => {
         const [projects, setProjects] = React.useState([]);
-        const [editStatus, setEditStatus] = React.useState({});
+        const [editProject, setEditProject] = React.useState(null); // Track the project being edited
+        const [editDetails, setEditDetails] = React.useState({});
 
         React.useEffect(() => {
             const queryParams = new URLSearchParams(window.location.search);
@@ -118,75 +131,77 @@
                 .catch(error => console.error('Error fetching projects:', error));
         }, []);
 
-        const fetchProjects = async (agentMail) => {
-            agentMail = agentMail || new URLSearchParams(window.location.search).get("username");
-            if (!agentMail) {
-                console.error("Agent email is missing or empty");
-                return;
-            }
+        React.useEffect(() => {
+            const queryParams = new URLSearchParams(window.location.search);
+            const agentMail = queryParams.get("username");
+            fetch(`/api/projects/all_projects_update_dashboard?agentMail=${agentMail}`)
+                .then((response) => response.json())
+                .then((data) => setProjects(data))
+                .catch((error) => console.error("Error fetching projects:", error));
+        }, []);
 
-            try {
-                const response = await fetch(`/api/projects/all_projects_update_dashboard?agentMail=${agentMail}`);
-                if (!response.ok) {
-                    console.error("Failed to fetch projects:", response.statusText);
-                    return;
-                }
-                const data = await response.json();
-                setProjects(data);
-            } catch (error) {
-                console.error("Error fetching projects:", error);
+        const handleEdit = (projectId) => {
+            const project = projects.find((p) => p.projectId === projectId);
+            if (project) {
+                setEditDetails({
+                    projectId: project.projectId,
+                    projectName: project.projectName,
+                    countryName: project.countryName,
+                    hotel: project.hotel,
+                    distance: project.distance,
+                    start: project.start,
+                    stop: project.stop,
+                    agentName: project.agentName,
+                });
+                setEditProject(project); // This may not be needed if you use only `editDetails`
             }
         };
 
-        React.useEffect(() => {
-                fetchProjects();
-            }, []);
 
-            const toggleEdit = (projectId) => {
-                setEditStatus((prevState) => ({
-                    ...prevState,
-                    [projectId]: !prevState[projectId],
-                }));
+        const handleUpdate = async (projectId) => {
+            // Construct updated project from local state
+            const updatedProject = {
+                projectId,
+                projectName: editDetails.projectName,
+                countryId: 0,
+                country: editDetails.countryName || "",
+                hotel: editDetails.hotel,
+                distance: parseInt(editDetails.distance) || 0,
+                start: editDetails.start,
+                stop: editDetails.stop,
+                agentId: 0,
+                agent: editDetails.agentName || "", // Sending agentName as a string
             };
 
-            const handleUpdateProject = async (projectId) => {
-                const project = projects.find((p) => p.projectId === projectId);
+            console.log(updatedProject);
 
-                if (!project) return;
+            const response = await fetch(`/api/projects/update/${projectId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedProject),
+            });
 
-                if (!startDateInput || !endDateInput) {
-                    console.error("Input elements for start or end date are missing");
-                    return;
-                }
+            if (response.ok) {
+                console.log("Project updated successfully");
+                const queryParams = new URLSearchParams(window.location.search);
+                const agentMail = queryParams.get("username");
+                fetch(`/api/projects/all_projects_update_dashboard?agentMail=${agentMail}`)
+                    .then((response) => response.json())
+                    .then((data) => setProjects(data))
+                    .catch((error) => console.error("Error fetching projects:", error));
+            } else {
+                console.error("Error updating project:", response.statusText);
+            }
+        };
 
-                const startDate = startDateInput.value || '';
-                const endDate = endDateInput.value || '';
-                const updatedProject = {
-                    projectId: project.projectId,
-                    projectName: project.projectName || '',
-                    country: project.country || '',
-                    hotel: project.hotel || '',
-                    distance: project.distance || '',
-                    startDate: project.startDate || '',
-                    endDate: project.endDate || '',
-                    agent: project.agent || '',
-                };
-
-                const response = await fetch(`/projects/${projectId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(updatedProject),
-                });
-
-                if (response.ok) {
-                    const queryParams = new URLSearchParams(window.location.search);
-                    const agentMail = queryParams.get("username");
-                    await fetchProjects(agentMail);
-                    toggleEdit(projectId);
-                }
-            };
+        const handleInputChange = (field, value) => {
+            setEditDetails((prevDetails) => ({
+                ...prevDetails,
+                [field]: value,
+            }));
+        };
 
         const handleDeleteProject = (projectId) => {
             fetch(`/api/projects/delete/${projectId}`, {
@@ -207,7 +222,7 @@
         };
 
         const projectRows = projects.map((project) => {
-            const isEditing = !!editStatus[project.projectId];
+            const projectId = project.projectId;
 
             return React.createElement(
                 'tr',
@@ -215,143 +230,54 @@
                 React.createElement(
                     'td',
                     null,
-                    isEditing
-                        ? React.createElement(
-                            'input',
-                            {
-                                type: 'text',
-                                value: editStatus[project.projectId]?.projectId || project.projectId,
-                                readOnly: true,
-                                className: 'edit-input',
-                            }
-                        )
-                        : project.projectId
+                    project.projectId
                 ),
                 React.createElement(
                     'td',
                     null,
-                    isEditing
-                        ? React.createElement(
-                            'input',
-                            {
-                                type: 'text',
-                                value: editStatus[project.projectId]?.projectName || project.projectName,
-                                onChange: (e) => handleUpdateProject(project.projectId, 'projectName', e.target.value),
-                                className: 'edit-input',
-                            }
-                        )
-                        : project.projectName
+                    project.projectName
                 ),
                 React.createElement(
                     'td',
                     null,
-                    isEditing
-                        ? React.createElement(
-                            'input',
-                            {
-                                type: 'text',
-                                value: editStatus[project.projectId]?.countryName || project.countryName,
-                                onChange: (e) => handleUpdateProject(project.projectId, 'countryName', e.target.value),
-                                className: 'edit-input',
-                            }
-                        )
-                        : project.countryName
+                    project.countryName
                 ),
                 React.createElement(
                     'td',
                     null,
-                    isEditing
-                        ? React.createElement(
-                            'input',
-                            {
-                                type: 'text',
-                                value: editStatus[project.projectId]?.hotel || project.hotel,
-                                onChange: (e) => handleUpdateProject(project.projectId, 'hotel', e.target.value),
-                                className: 'edit-input',
-                            }
-                        )
-                        : project.hotel
+                    project.hotel
                 ),
                 React.createElement(
                     'td',
                     null,
-                    isEditing
-                        ? React.createElement(
-                            'input',
-                            {
-                                type: 'text',
-                                value: editStatus[project.projectId]?.distance || project.distance,
-                                onChange: (e) => handleUpdateProject(project.projectId, 'distance', e.target.value),
-                                className: 'edit-input',
-                            }
-                        )
-                        : project.distance
+                    project.distance
                 ),
                 React.createElement(
                     'td',
                     null,
-                    isEditing
-                        ? React.createElement(
-                            'input',
-                            {
-                                type: 'date',
-                                value: editStatus[project.projectId]?.start || project.start,
-                                onChange: (e) => handleUpdateProject(project.projectId, 'start', e.target.value),
-                                className: 'edit-input',
-                            }
-                        )
-                        : project.start
+                    project.start
                 ),
                 React.createElement(
                     'td',
                     null,
-                    isEditing
-                        ? React.createElement(
-                            'input',
-                            {
-                                type: 'date',
-                                value: editStatus[project.projectId]?.stop || project.stop,
-                                onChange: (e) => handleUpdateProject(project.projectId, 'stop', e.target.value),
-                                className: 'edit-input',
-                            }
-                        )
-                        : project.stop
+                    project.stop
                 ),
                 React.createElement(
                     'td',
                     null,
-                    isEditing
-                        ? React.createElement(
-                            'input',
-                            {
-                                type: 'text',
-                                value: editStatus[project.projectId]?.agentName || project.agentName,
-                                onChange: (e) => handleUpdateProject(project.projectId, 'agentName', e.target.value),
-                                className: 'edit-input',
-                            }
-                        )
-                        : project.agentName
+                    project.agentName
                 ),
                 React.createElement(
                     'td',
                     null,
-                    isEditing
-                        ? React.createElement(
-                            'button',
-                            {
-                                className: 'update-button',
-                                onClick: () => handleUpdateProject(project.projectId),
-                            },
-                            'Update'
-                        )
-                        : React.createElement(
-                            'button',
-                            {
-                                className: 'edit-button',
-                                onClick: () => toggleEdit(project.projectId),
-                            },
-                            'Edit'
-                        ),
+                    React.createElement(
+                        'button',
+                        {
+                            className: 'edit-button',
+                            onClick: () => handleEdit(project.projectId),
+                        },
+                        'Edit'
+                    ),
                     React.createElement(
                         'button',
                         {
@@ -389,6 +315,73 @@
                     )
                 ),
                 React.createElement('tbody', null, projectRows)
+            ),
+            React.createElement(
+                'div',
+                { className: `edit-form ${editProject ? 'active' : ''}` },
+                editProject && React.createElement(
+                    'div',
+                    null,
+                    React.createElement('h2', null, 'Edit Project'),
+                    React.createElement('input', {
+                        type: 'text',
+                        value: editDetails.projectName,
+                        onChange: (e) => handleInputChange('projectName', e.target.value),
+                        placeholder: 'Project Name',
+                    }),
+                    React.createElement('input', {
+                        type: 'text',
+                        value: editDetails.countryName,
+                        onChange: (e) => handleInputChange('countryName', e.target.value),
+                        placeholder: 'Country Name',
+                    }),
+                    React.createElement('input', {
+                        type: 'text',
+                        value: editDetails.hotel,
+                        onChange: (e) => handleInputChange('hotel', e.target.value),
+                        placeholder: 'Hotel',
+                    }),
+                    React.createElement('input', {
+                        type: 'text',
+                        value: editDetails.distance,
+                        onChange: (e) => handleInputChange('distance', e.target.value),
+                        placeholder: 'Distance',
+                    }),
+                    React.createElement('input', {
+                        type: 'text',
+                        value: editDetails.start,
+                        onChange: (e) => handleInputChange('start', e.target.value),
+                        placeholder: 'Start Date',
+                    }),
+                    React.createElement('input', {
+                        type: 'text',
+                        value: editDetails.stop,
+                        onChange: (e) => handleInputChange('stop', e.target.value),
+                        placeholder: 'End Date',
+                    }),
+                    React.createElement('input', {
+                        type: 'text',
+                        value: editDetails.agentName,
+                        onChange: (e) => handleInputChange('agentName', e.target.value),
+                        placeholder: 'Agent Name',
+                    }),
+                    React.createElement(
+                        'button',
+                        {
+                            className: 'update-button',
+                            onClick: () => handleUpdate(editDetails.projectId),
+                        },
+                        'Update'
+                    ),
+                    React.createElement(
+                        'button',
+                        {
+                            className: 'edit-button',
+                            onClick: () => setEditProject(null),
+                        },
+                        'Cancel'
+                    )
+                )
             )
         );
     };
