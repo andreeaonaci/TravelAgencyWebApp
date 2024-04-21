@@ -193,6 +193,29 @@
         const [selectedTransport, setSelectedTransport] = React.useState('');
         const [selectedMenu, setSelectedMenu] = React.useState('');
 
+        const calculatePrice = async () => {
+            const projectID = getProjectIdParameter();
+            const clientMail = getUrlParameter('clientMail');
+            const transport = selectedTransport;
+            const menu = selectedMenu;
+
+            try {
+                const response = await fetch(`/api/projects/price?service_id=0&project_id=${projectID}&menu=${menu}&transport=${transport}`, {
+                    method: 'GET',
+                });
+
+                if (response.ok) {
+                    const price = await response.json(); // Assuming the backend returns JSON
+                    alert(`The calculated price is: ${price}`); // Display the calculated price
+                } else {
+                    alert("Error calculating price. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error calculating price:", error);
+                alert("An error occurred while calculating the price. Please try again.");
+            }
+        };
+
         const handleSubmit = (event) => {
             event.preventDefault();
             const formData = new FormData(document.getElementById('reservationForm'));
@@ -273,7 +296,8 @@
                         ))
                     )
                 ),
-                React.createElement('btn', { className: 'btn', type: 'submit', onClick: handleSubmit }, 'Make Reservation')
+                React.createElement('btn', { className: 'btn', type: 'submit', onClick: handleSubmit }, 'Make Reservation'),
+                React.createElement('btn', { className: 'btn', type: 'submit', onClick: calculatePrice }, 'Calculate Price')
             )
         );
     }

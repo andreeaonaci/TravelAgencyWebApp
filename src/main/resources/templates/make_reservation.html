@@ -177,7 +177,7 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        alert("Reservation successful.")
+                        alert("Reservation successful. Note that if you don't select the services the reservation will be canceled.");
                         window.location.href = `/api/projects/services.html?projectId=${projectID}&clientMail=${clientMail}`;
                     } else {
                         alert("Reservation failed. Maybe you have already made a reservation for this project.");

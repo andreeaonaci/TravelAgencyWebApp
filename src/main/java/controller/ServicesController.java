@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import services.PriceService;
 import services.ProjectService;
 import services.ReservationService;
 import services.ServicesService;
+
+import java.sql.SQLException;
 
 @Controller
 @RequestMapping("/api/projects")
@@ -22,7 +22,10 @@ public class ServicesController {
     private ProjectService projectService;
 
     @Autowired
-    private ReservationService reservationService; // Assuming you have a ReservationService
+    private ReservationService reservationService;
+
+    @Autowired
+    private PriceService priceService;
 
     @PostMapping("/services")
     public ResponseEntity<?> selectServices(@RequestParam("projectId") Long projectId, @RequestParam("clientMail") String clientMail,  @RequestParam("selectedTransport") String transport,  @RequestParam("selectedMenu") String menu) {
@@ -43,5 +46,48 @@ public class ServicesController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to make reservation.");
         }
+    }
+    @GetMapping("/price")
+    public ResponseEntity<Double> calculatePrice(
+            @RequestParam("service_id") int serviceId,
+            @RequestParam("project_id") Long projectId,
+            @RequestParam("menu") String menu,
+            @RequestParam("transport") String transport
+    ) throws SQLException, ClassNotFoundException {
+        int duration = projectService.getProjectDuration(projectId);
+        int priceHotel = (int) (priceService.getPriceForHotelPerNight(projectService.getHotelNameById(Math.toIntExact(projectId))) * duration);
+        double priceMenu = 0, priceTransport = 0;
+
+        switch (menu) {
+            case "Ultra All Inclusive":
+                priceMenu = 300;
+                break;
+            case "Only Breakfast":
+                priceMenu = 50;
+                break;
+            case "Breakfast + Dinner":
+                priceMenu = 80;
+                break;
+            case "All Inclusive":
+                priceMenu = 200;
+                break;
+        }
+
+        switch (transport) {
+            case "plane":
+                priceTransport = (projectService.findById(projectId).getDistance() * 0.5);
+                break;
+            case "train":
+                priceTransport = (projectService.findById(projectId).getDistance() * 0.4);
+                break;
+            case "bus":
+                priceTransport = (projectService.findById(projectId).getDistance() * 0.3);
+                break;
+        }
+
+        priceMenu *= duration;
+        double totalPrice = priceMenu + priceTransport + priceHotel;
+
+        return ResponseEntity.ok(totalPrice);
     }
 }
