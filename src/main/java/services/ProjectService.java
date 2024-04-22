@@ -66,4 +66,8 @@ public class ProjectService {
     public void deleteProject(Long projectId) {
         projectRepository.deleteById(projectId);
     }
+    public int getCountryIdByHotel(String hotel) {
+        Project project = projectRepository.findByHotel(hotel);
+        return project.getCountry();
+    }
 }

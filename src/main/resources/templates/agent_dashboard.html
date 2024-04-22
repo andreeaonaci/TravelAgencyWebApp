@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="agentDashboard">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -112,7 +112,7 @@
         }
     </style>
 </head>
-<body>
+<body ng-controller="DashboardController as dashboard">
 <div class="container">
     <!-- React part -->
     <div id="reactRoot"></div>
@@ -131,11 +131,12 @@
     angular.module('agentDashboard', [])
         .controller('DashboardController', function($location) {
             this.logout = function() {
+                console.log('Logging out');
                 window.location.href = `/api/agents/agentLogin`;
             };
 
             var urlParams = new URLSearchParams(window.location.search);
-            this.agentName = urlParams.get('username');
+            this.agentMail = urlParams.get('username');
         });
 
     function AgentDashboard() {

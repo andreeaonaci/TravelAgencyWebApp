@@ -10,4 +10,5 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, Long>{
     Project findById(long id);
     List<Project> findByAgent(int agentId);
+    Project findByHotel(String hotel);
 }

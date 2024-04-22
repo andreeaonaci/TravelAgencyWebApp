@@ -2,6 +2,10 @@ package models;
 
 import jakarta.persistence.*;
 
+/**
+ * Represents a feedback record in the system.
+ * Each feedback is associated with a project and a client email.
+ */
 @Entity
 @Table(name = "feedback")
 public class Feedback {
@@ -20,47 +24,75 @@ public class Feedback {
     @Column(name = "feedback_mail")
     private String feedbackMail;
 
+    /**
+     * Gets the unique identifier for this feedback.
+     *
+     * @return the feedback ID
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * Sets the unique identifier for this feedback.
+     *
+     * @param id the new feedback ID
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * Gets the text of the feedback.
+     *
+     * @return the feedback text
+     */
     public String getFeedbackText() {
         return feedbackText;
     }
 
+    /**
+     * Sets the text of the feedback.
+     *
+     * @param feedbackText the new feedback text
+     */
     public void setFeedbackText(String feedbackText) {
         this.feedbackText = feedbackText;
     }
 
-    public String getFeedbackMail() {
-        return feedbackMail;
-    }
-
-    public void setFeedbackMail(String feedbackMail) {
-        this.feedbackMail = feedbackMail;
-    }
-
-//    public Client getClient() {
-//        return client;
-//    }
-
+    /**
+     * Gets the project ID associated with this feedback.
+     *
+     * @return the project ID
+     */
     public int getFeedbackProject() {
         return Math.toIntExact(feedbackProject);
     }
 
+    /**
+     * Sets the project ID associated with this feedback.
+     *
+     * @param feedbackProject the new project ID
+     */
     public void setFeedbackProject(Long feedbackProject) {
         this.feedbackProject = feedbackProject;
     }
 
-//    public void setClient(Client client) {
-//        this.client = client;
-//    }
+    /**
+     * Gets the email of the client who provided this feedback.
+     *
+     * @return the client's email
+     */
+    public String getFeedbackMail() {
+        return feedbackMail;
+    }
 
-    // Define a Many-to-One relationship with Person
-//    @Column(name = "feedback_client")
-//    private Client client;
+    /**
+     * Sets the email of the client who provided this feedback.
+     *
+     * @param feedbackMail the new client's email
+     */
+    public void setFeedbackMail(String feedbackMail) {
+        this.feedbackMail = feedbackMail;
+    }
 }

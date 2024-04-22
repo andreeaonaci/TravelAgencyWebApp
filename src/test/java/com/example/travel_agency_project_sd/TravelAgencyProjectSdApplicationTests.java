@@ -9,5 +9,4 @@ class TravelAgencyProjectSdApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }

@@ -1,10 +1,13 @@
 package services;
 
+import models.Reservation;
 import models.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repositories.ServicesRepository;
 
+
+//null object pattern
 @Service
 public class ServicesService {
     @Autowired
@@ -21,5 +24,10 @@ public class ServicesService {
         service.setTransport(transport);
         service.setMenu(menu);
         servicesRepository.save(service);
+    }
+    private Reservation createNullReservation() {
+        Reservation nullReservation = new Reservation();
+        nullReservation.setId(-1L);  // Represents a null reservation
+        return nullReservation;
     }
 }

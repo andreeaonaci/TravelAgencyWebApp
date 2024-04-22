@@ -200,7 +200,7 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        window.location.href = '/login';
+                        window.location.href = '/api/clients/clientLogin';
                     } else {
                         document.getElementById('error-message').textContent = 'An error occurred. Please try again later.';
                         document.getElementById('error-message').style.display = 'block';
@@ -225,7 +225,7 @@
             React.createElement(
                 'div',
                 { className: 'input-group' },
-                React.createElement('input', { type: 'text', id: 'function', placeholder: 'Function' }),
+                React.createElement('input', { type: 'text', id: 'function', value: 'Client', placeholder: 'Function', required: true, disabled: true }),
                 React.createElement('i', { className: 'fas fa-briefcase' })
             ),
             React.createElement(
