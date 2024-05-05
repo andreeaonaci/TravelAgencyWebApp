@@ -67,7 +67,7 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findAllByClient(client);
         List<Long> projectIds = new java.util.ArrayList<>();
         for (Reservation reservation : reservations) {
-            projectIds.add((long) reservation.getProject().getProjectId());
+            projectIds.add((long) reservation.getProject().getId());
         }
         return projectIds;
     }

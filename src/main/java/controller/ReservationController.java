@@ -19,6 +19,9 @@ public class ReservationController {
     public ResponseEntity<?> makeReservationDashboard(@RequestParam("projectId") Long projectId,
                                                       @RequestParam("clientMail") String clientMail) {
         try {
+            if (ClientController.getClientSecurity() == null || !ClientController.getClientSecurity().getClientMail().equals(clientMail)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+            }
             reservationService.makeReservation(projectId, clientMail);
             return ResponseEntity.status(HttpStatus.OK).body("/api/projects/services.html?projectId=" + projectId + "&clientMail=" + clientMail);
         } catch (Exception e) {
@@ -29,12 +32,18 @@ public class ReservationController {
     @GetMapping("/services.html")
     public String services(@RequestParam("projectId") Long projectId,
                            @RequestParam("clientMail") String clientMail) {
+        if (ClientController.getClientSecurity() == null || !ClientController.getClientSecurity().getClientMail().equals(clientMail)) {
+            return "redirect:/api/clients/clientLogin";
+        }
         return "services";
     }
 
     @GetMapping("/all_projects_by_client/{clientMail}")
     @ResponseBody
     public List<Long> getAllProjectsByClient(@PathVariable("clientMail") String clientMail) {
+        if (ClientController.getClientSecurity() == null || !ClientController.getClientSecurity().getClientMail().equals(clientMail)) {
+            return null;
+        }
         return reservationService.getAllProjectsByClient(clientMail);
     }
 

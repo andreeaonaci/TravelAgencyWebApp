@@ -23,9 +23,8 @@ public class ProjectService {
         List<Map<String, Object>> simplifiedProjects = new ArrayList<>();
 
         for (Project project : projects) {
-            System.out.println(project.getProjectId() + " " + project.getName());
             Map<String, Object> simplifiedProject = new HashMap<>();
-            simplifiedProject.put("projectId", project.getProjectId());
+            simplifiedProject.put("projectId", project.getId());
             simplifiedProject.put("projectName", project.getName());
             simplifiedProjects.add(simplifiedProject);
         }

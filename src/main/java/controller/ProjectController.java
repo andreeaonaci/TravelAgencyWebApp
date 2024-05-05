@@ -38,6 +38,9 @@ public class ProjectController {
     private AgentService agentService;
     @GetMapping("/make_reservation.html")
     public String MakeReservationDashboard(@RequestParam("clientMail") String username, Model model) {
+        if (ClientController.getClientSecurity() == null || !ClientController.getClientSecurity().getClientMail().equals(username)) {
+            return "redirect:/api/clients/clientLogin";
+        }
         model.addAttribute("clientMail", username);
         List<Map<String, Object>> projects = projectService.getAllProjects();
         model.addAttribute("projects", projects);
@@ -45,6 +48,9 @@ public class ProjectController {
     }
     @GetMapping("/view_projects_client.html")
     public String ViewProjectsDashboard(@RequestParam("username") String username, Model model) {
+        if (ClientController.getClientSecurity() == null || !ClientController.getClientSecurity().getClientMail().equals(username)) {
+            return "redirect:/api/clients/clientLogin";
+        }
         model.addAttribute("username", username);
         return "view_projects_client";
     }
@@ -63,7 +69,7 @@ public class ProjectController {
 
         for (Project project : projects) {
             Map<String, Object> projectMap = new HashMap<>();
-            projectMap.put("projectId", project.getProjectId());
+            projectMap.put("projectId", project.getId());
             projectMap.put("projectName", project.getName());
             String countryName = countryService.getCountryNameById(project.getCountry());
             projectMap.put("countryName", countryName);
@@ -120,6 +126,9 @@ public class ProjectController {
 
     @GetMapping("/add_project.html")
     public String addProject(@RequestParam String username, Model model) {
+        if (AgentController.getAgentSecurity() == null || !AgentController.getAgentSecurity().getAgentMail().equals(username)) {
+            return "redirect:/api/agents/agentLogin";
+        }
         model.addAttribute("username", username);
         return "add_project";
     }
@@ -130,6 +139,9 @@ public class ProjectController {
     }
     @PostMapping("/add_project")
     public ResponseEntity<Project> addProjectDashboard(@RequestBody Map<String, String> formData) throws ParseException {
+        if (AgentController.getAgentSecurity() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        }
         Project project = new Project();
         String projectName = formData.get("name");
         String country = formData.get("country");
@@ -140,6 +152,10 @@ public class ProjectController {
         String endDateString = formData.get("end");
         String agent = formData.get("agent");
         int agentId = agentService.findByIdAgentMail(agent);
+        Agent agentObj = agentService.findByIdAgent(agentId);
+        if (AgentController.getAgentSecurity() == null || !AgentController.getAgentSecurity().getAgentMail().equals(agentObj.getAgentMail())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = dateFormat.parse(startDateString);
@@ -160,6 +176,9 @@ public class ProjectController {
     @GetMapping("/all_projects_update_dashboard")
     @ResponseBody
     public List<Map<String, Object>> getAllProjectsForAgent(@RequestParam(value = "agentMail", required = true) String agentMail) {
+        if (AgentController.getAgentSecurity() == null || !AgentController.getAgentSecurity().getAgentMail().equals(agentMail)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        }
         if (agentMail == null || agentMail.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "agentMail parameter is required");
         }
@@ -172,7 +191,7 @@ public class ProjectController {
 
         for (Project project : projects) {
             Map<String, Object> projectMap = new HashMap<>();
-            projectMap.put("projectId", project.getProjectId());
+            projectMap.put("projectId", project.getId());
             projectMap.put("projectName", project.getName());
             String countryName = countryService.getCountryNameById(project.getCountry());
             projectMap.put("countryName", countryName);
@@ -189,12 +208,18 @@ public class ProjectController {
     }
     @GetMapping("/view_projects_admin.html")
     public String viewProjectsAgentDashboard(@RequestParam("username") String agentMail, Model model) {
+        if (AgentController.getAgentSecurity() == null || !AgentController.getAgentSecurity().getAgentMail().equals(agentMail)) {
+            return "redirect:/api/agents/agentLogin";
+        }
         model.addAttribute("username", agentMail);
         return "view_projects_admin";
     }
     @PutMapping("/update/{projectId}")
     public ResponseEntity<?> updateProject(@PathVariable("projectId") Long projectId, @RequestBody Map<String, Object> updatedProjectData) throws ParseException {
         // Check if project exists
+        if (AgentController.getAgentSecurity() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+        }
         System.out.println(updatedProjectData.get("country"));
         System.out.println(updatedProjectData.get("agent"));
         System.out.println(updatedProjectData.get("start"));
@@ -236,6 +261,9 @@ public class ProjectController {
     }
     @DeleteMapping("/delete/{projectId}")
     public ResponseEntity<Void> deleteProject(@PathVariable Long projectId) {
+        if (AgentController.getAgentSecurity() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        }
         Project existingProject = projectService.findById(projectId);
         if (existingProject == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project not found");
@@ -247,6 +275,9 @@ public class ProjectController {
     }
     @GetMapping("/updateCountry/{countryName}")
     public ResponseEntity<?> getCountryIdByName(@PathVariable String countryName) {
+        if (AgentController.getAgentSecurity() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+        }
         int countryId = countryService.getCountryIdByName(countryName);
         if (countryId == 0) {
             return ResponseEntity.notFound().build();

@@ -205,8 +205,8 @@
                 });
 
                 if (response.ok) {
-                    const price = await response.json(); // Assuming the backend returns JSON
-                    alert(`The calculated price is: ${price}`); // Display the calculated price
+                    const price = await response.json();
+                    alert(`The calculated price is: ${price}`);
                 } else {
                     alert("Error calculating price. Please try again.");
                 }
@@ -240,7 +240,7 @@
                 .then(response => {
                     if (response.ok) {
                         alert("Reservation successful.You selected the services for your reservation. Enjoy the trip!")
-                        window.location.href = `/api/projects/services.html?projectId=${projectID}&clientMail=${clientMail}`;
+                        window.location.href = `/api/clients/client_dashboard.html?username=${clientMail}`;
                     } else {
                         alert("Something went wrong. Please try again.")
                     }

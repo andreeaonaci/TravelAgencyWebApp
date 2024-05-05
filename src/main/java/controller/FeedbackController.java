@@ -39,6 +39,9 @@ public class FeedbackController {
     public String giveFeedbackDashboard(@RequestParam("projectId") Long projectId,
                                         @RequestParam("clientMail") String clientMail,
                                         @RequestParam("feedback") String feedbackText) {
+        if (ClientController.getClientSecurity() == null || !ClientController.getClientSecurity().getClientMail().equals(clientMail)) {
+            return "redirect:/api/clients/clientLogin";
+        }
         Feedback feedback = new Feedback();
         feedback.setFeedbackProject(projectId);
         feedback.setFeedbackMail(clientMail);
@@ -51,6 +54,9 @@ public class FeedbackController {
     @GetMapping("/see_feedbacks_dashboard")
     @ResponseBody
     public List<Map<String, Object>> getFeedbacks(@RequestParam(value = "username", required = true) String username) {
+        if (AgentController.getAgentSecurity() == null || !AgentController.getAgentSecurity().getAgentMail().equals(username)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        }
         if (username == null || username.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is required");
         }
@@ -85,6 +91,9 @@ public class FeedbackController {
     }
     @GetMapping("/see_feedbacks.html")
     public String seeFeedbacksDashboard(@RequestParam("username") String username, Model model) {
+        if (AgentController.getAgentSecurity() == null || !AgentController.getAgentSecurity().getAgentMail().equals(username)) {
+            return "redirect:/api/agents/agentLogin";
+        }
         model.addAttribute("username", username);
         List<Map<String, Object>> feedbacks = getFeedbacks(username);
         model.addAttribute("feedbacks", feedbacks);

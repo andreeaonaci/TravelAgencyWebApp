@@ -32,6 +32,9 @@ public class ServicesController {
         try {
             System.out.println("transport: " + transport);
             System.out.println("menu: " + menu);
+            if (ClientController.getClientSecurity() == null || !ClientController.getClientSecurity().getClientMail().equals(clientMail)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+            }
             Long reservationId = reservationService.getReservationId(projectId, clientMail);
             int projectDuration = projectService.getProjectDuration(projectId);
             String hotelName = projectService.getHotelNameById(Math.toIntExact(projectId));
@@ -41,7 +44,8 @@ public class ServicesController {
             }
 
             servicesService.addService(reservationId, projectDuration, hotelName, transport, menu);
-            return ResponseEntity.status(HttpStatus.OK).body("Reservation successful");
+            ResponseEntity.status(HttpStatus.OK).body("Reservation successful");
+            return ResponseEntity.status(HttpStatus.OK).body("/api/clients/client_dashboard.html?username=" + clientMail);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to make reservation.");
@@ -54,6 +58,9 @@ public class ServicesController {
             @RequestParam("menu") String menu,
             @RequestParam("transport") String transport
     ) throws SQLException, ClassNotFoundException {
+        if (ClientController.getClientSecurity() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         int duration = projectService.getProjectDuration(projectId);
         int priceHotel = (int) (priceService.getPriceForHotelPerNight(projectService.getHotelNameById(Math.toIntExact(projectId))) * duration);
         double priceMenu = 0, priceTransport = 0;

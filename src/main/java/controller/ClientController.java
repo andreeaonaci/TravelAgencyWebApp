@@ -26,10 +26,18 @@ public class ClientController {
     @Autowired
     private ProjectService projectService;
 
+    private static Client clientSecurity;
+
+    @GetMapping("/clientSecurity")
+    public static Client getClientSecurity() {
+        return clientSecurity;
+    }
+
     @PostMapping("/clientLogin")
     public ResponseEntity<?> loginClient(@RequestBody Client client) {
         boolean isValidUser = clientService.validateCredentials(client.getClientMail(), client.getClientPassword());
         if (isValidUser) {
+            clientSecurity = client;
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(client.getClientMail(), null);
             SecurityContext securityContext = SecurityContextHolder.getContext();
             securityContext.setAuthentication(authenticationToken);
@@ -42,13 +50,15 @@ public class ClientController {
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody Map<String, String> clientData) {
         try {
+            if (clientData == null || clientData.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user data");
+            }
             String name = clientData.get("clientName");
             String func = clientData.get("clientFunction");
             String email = clientData.get("clientMail");
             String phone = clientData.get("clientPhone");
             String password = clientData.get("clientPassword");
             System.out.println("Registering user: " + name + " " + func + " " + email + " " + phone + " " + password);
-
             Client client = new Client(name, func, password, email, phone);
             clientService.registerClient(client);
             return ResponseEntity.ok("User registered successfully");
@@ -58,12 +68,18 @@ public class ClientController {
     }
     @GetMapping("/client_dashboard.html")
     public String clientDashboard(@RequestParam("username") String username, Model model) {
+        if (clientSecurity == null || !clientSecurity.getClientMail().equals(username) || !clientService.validateCredentials(clientSecurity.getClientMail(), clientSecurity.getClientPassword())) {
+            return "redirect:/api/clients/clientLogin";
+        }
         model.addAttribute("username", username);
         return "client_dashboard";
     }
 
     @GetMapping("/api/feedback/give_feedback.html")
     public String giveFeedback(@RequestParam("username") String username, Model model) {
+        if (clientSecurity == null || !clientSecurity.getClientMail().equals(username) || !clientService.validateCredentials(clientSecurity.getClientMail(), clientSecurity.getClientPassword())) {
+            return "redirect:/api/clients/clientLogin";
+        }
         model.addAttribute("username", username);
         return "give_feedback";
     }
