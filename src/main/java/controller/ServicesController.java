@@ -44,8 +44,7 @@ public class ServicesController {
             }
 
             servicesService.addService(reservationId, projectDuration, hotelName, transport, menu);
-            ResponseEntity.status(HttpStatus.OK).body("Reservation successful");
-            return ResponseEntity.status(HttpStatus.OK).body("/api/clients/client_dashboard.html?username=" + clientMail);
+            return ResponseEntity.status(HttpStatus.OK).body("Reservation successful");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to make reservation.");
