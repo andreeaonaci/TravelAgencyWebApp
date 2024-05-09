@@ -22,6 +22,9 @@ public class ReservationController {
             if (ClientController.getClientSecurity() == null || !ClientController.getClientSecurity().getClientMail().equals(clientMail)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
             }
+            if (projectId == null || projectId <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Project ID is required");
+            }
             reservationService.makeReservation(projectId, clientMail);
             return ResponseEntity.status(HttpStatus.OK).body("/api/projects/services.html?projectId=" + projectId + "&clientMail=" + clientMail);
         } catch (Exception e) {

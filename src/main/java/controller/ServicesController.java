@@ -35,6 +35,9 @@ public class ServicesController {
             if (ClientController.getClientSecurity() == null || !ClientController.getClientSecurity().getClientMail().equals(clientMail)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
             }
+            if (projectId == null || projectId <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Project ID is required");
+            }
             Long reservationId = reservationService.getReservationId(projectId, clientMail);
             int projectDuration = projectService.getProjectDuration(projectId);
             String hotelName = projectService.getHotelNameById(Math.toIntExact(projectId));
@@ -59,6 +62,9 @@ public class ServicesController {
     ) throws SQLException, ClassNotFoundException {
         if (ClientController.getClientSecurity() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        if (projectId == null || projectId <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
         int duration = projectService.getProjectDuration(projectId);
         int priceHotel = (int) (priceService.getPriceForHotelPerNight(projectService.getHotelNameById(Math.toIntExact(projectId))) * duration);

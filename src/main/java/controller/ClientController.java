@@ -53,6 +53,9 @@ public class ClientController {
             if (clientData == null || clientData.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user data");
             }
+            if (clientData.get("clientName") == null || clientData.get("clientFunction") == null || clientData.get("clientMail") == null || clientData.get("clientPhone") == null || clientData.get("clientPassword") == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid user data");
+            }
             String name = clientData.get("clientName");
             String func = clientData.get("clientFunction");
             String email = clientData.get("clientMail");

@@ -93,7 +93,7 @@ public class ProjectController {
             List<Long> projectIdList = objectMapper.readValue(projectIds, new TypeReference<List<Long>>() {});
 
             if (projectIdList == null || projectIdList.isEmpty()) {
-                return ResponseEntity.badRequest().body("No project IDs provided.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Project IDs are required");
             }
 
             Set<Long> uniqueProjectIds = new HashSet<>(projectIdList);
@@ -141,6 +141,9 @@ public class ProjectController {
     public ResponseEntity<Project> addProjectDashboard(@RequestBody Map<String, String> formData) throws ParseException {
         if (AgentController.getAgentSecurity() == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized access");
+        }
+        if (formData == null || formData.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Form data is required");
         }
         Project project = new Project();
         String projectName = formData.get("name");

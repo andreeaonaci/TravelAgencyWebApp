@@ -42,6 +42,18 @@ public class FeedbackController {
         if (ClientController.getClientSecurity() == null || !ClientController.getClientSecurity().getClientMail().equals(clientMail)) {
             return "redirect:/api/clients/clientLogin";
         }
+        if (projectId == null || projectId <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Project ID is required");
+        }
+        if (clientMail.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client mail is required");
+        }
+        if (feedbackText == null || feedbackText.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Feedback text is required");
+        }
+        if (clientService.getClientIdByMail(clientMail) == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found");
+        }
         Feedback feedback = new Feedback();
         feedback.setFeedbackProject(projectId);
         feedback.setFeedbackMail(clientMail);

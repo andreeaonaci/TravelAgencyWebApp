@@ -91,4 +91,22 @@ public class ClientService {
 
         return client;
     }
+
+    /**
+     * Fetches a client's ID by their email address.
+     *
+     * @param clientMail The email address of the client.
+     * @return The ID of the client found with the given email, or 0 if not found.
+     */
+    @Transactional
+    public Long getClientIdByMail(String clientMail) {
+        logger.info("Fetching client ID by email: {}", clientMail);
+        Long clientId = (long) clientRepository.findClientIdByClientMail(clientMail).get().getClientId();
+
+        if (clientId == 0) {
+            logger.warn("Client with email {} does not exist.", clientMail);
+        }
+
+        return clientId;
+    }
 }
