@@ -1,0 +1,3 @@
+This web application serves as a comprehensive platform for travel management, providing functionalities for both administrators and users. Administrators have the ability to add new travel projects to the system, ensuring all necessary details are included. They can also access feedback from customers who have previously engaged in trips organized by them, allowing for continuous improvement. \\
+
+In the user side, individuals can explore and reserve tickets for various travel options. Through filtering conditions, users can customize their search and view the associated prices. Additionally, users have the opportunity to provide feedback on their travel experiences, contributing valuable insights for future improvements.
